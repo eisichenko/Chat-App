@@ -118,7 +118,7 @@ def my_profile():
 
 @users_blueprint.route('/delete')
 @login_required
-def delete():    
+def delete():
     user = User.query.get(current_user.id)
     
     logout_user()

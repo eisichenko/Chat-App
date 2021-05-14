@@ -2,6 +2,8 @@ from project import socketio
 from flask import session
 from flask_login import current_user
 from project.models import *
+import threading
+import concurrent.futures
 
 
 @socketio.on('send message')
@@ -20,9 +22,18 @@ def send_message_event(json):
     json['chat_id'] = chat_id
     
     chat = Chat.query.get(chat_id)
-    chat.messages.append(message)
     
-    chat.unread_messages_number += 1
+    def add_unread():
+        chat.unread_messages_number += 1
+    
+    threads = [threading.Thread(target=chat.messages.append(message)),
+               threading.Thread(target=add_unread)]
+    
+    for thread in threads:
+        thread.start()
+    
+    for thread in threads:
+        thread.join()
     
     db.session.commit()
     
@@ -36,9 +47,12 @@ def send_message_event(json):
 def read(json):
     if (json['username'] != current_user.username):
         
-        chat = Chat.query.get(json['chat_id'])
-        
-        message = Message.query.get(json['message_id'])
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            chat_future = executor.submit(Chat.query.get, json['chat_id'])
+            message_future = executor.submit(Message.query.get, json['message_id'])
+            
+            chat = chat_future.result()
+            message = message_future.result()
         
         message.unread = False
         

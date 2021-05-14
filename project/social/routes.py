@@ -2,6 +2,7 @@ from project.models import User, Chat
 from flask import render_template, request, redirect, url_for, session
 from flask_login import login_required, current_user
 from project import db, socketio
+import threading
 
 from . import social_blueprint
 
@@ -83,10 +84,15 @@ def start_chat(other_id):
     
     new_chat = Chat(unread_messages_number=0)
     
-    db.session.add(new_chat)
+    threads = [threading.Thread(target=db.session.add(new_chat)),
+               threading.Thread(target=new_chat.users.append(current_user)),
+               threading.Thread(target=new_chat.users.append(other_user))]
     
-    new_chat.users.append(current_user)
-    new_chat.users.append(other_user)
+    for thread in threads:
+        thread.start()
+    
+    for thread in threads:
+        thread.join()
     
     db.session.commit()
     
@@ -100,7 +106,7 @@ def start_chat(other_id):
 @social_blueprint.route('/friends')
 @login_required
 def friends():
-    return render_template('friends.html', current_user=current_user,)
+    return render_template('friends.html', current_user=current_user)
 
 
 @social_blueprint.route('/add-friend/<int:friend_id>')
@@ -114,8 +120,14 @@ def add_friend(friend_id):
     if (friend_user == None or friend_user in current_user.friends):
         return redirect(url_for('social.friends'))
     
-    current_user.friends.append(friend_user)
-    friend_user.friends.append(current_user)
+    threads = [threading.Thread(target=current_user.friends.append(friend_user)),
+               threading.Thread(target=friend_user.friends.append(current_user))]
+    
+    for thread in threads:
+        thread.start()
+    
+    for thread in threads:
+        thread.join()
     
     db.session.commit()
     
@@ -133,8 +145,14 @@ def remove_friend(friend_id):
     if (friend_user == None or not friend_user in current_user.friends):
         return redirect(url_for('social.friends'))
     
-    current_user.friends.remove(friend_user)
-    friend_user.friends.remove(current_user)
+    threads = [threading.Thread(target=current_user.friends.remove(friend_user)),
+               threading.Thread(target=friend_user.friends.remove(current_user))]
+    
+    for thread in threads:
+        thread.start()
+    
+    for thread in threads:
+        thread.join()
     
     db.session.commit()
     
