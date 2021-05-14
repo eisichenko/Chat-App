@@ -1,0 +1,204 @@
+html {
+    scroll-behavior: unset !important;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+    color:aliceblue !important;
+}
+
+.disabled{
+    pointer-events:none
+}
+
+hr.header {
+    height: 12px !important;
+    border: 0 !important;
+    box-shadow: inset 0 -12px 12px -9px rgb(0, 255, 255) !important;
+}
+
+hr.footer {
+    height: 2px !important;
+    color:rgb(0, 255, 213) !important;
+}
+
+div.post {
+    position: relative !important;
+    padding: 1rem 1rem !important;
+    margin-bottom: 1rem !important;
+    border: 2px solid transparent !important;
+    border-radius: .25rem !important;
+    border-color: #08f6ce !important;
+}
+
+div.user-message {
+    position: relative !important;
+    padding: 0.2rem 0.2rem !important;
+    margin-bottom: 0rem !important;
+    border: 2px solid transparent !important;
+    border-radius: 0.3rem !important;
+    border-color: #ffd900 !important;
+    background-color: rgb(100, 99, 99) !important;
+    margin-right: 0 !important;
+    overflow-wrap: break-word !important;
+}
+
+div.not-user-message {
+    position: relative !important;
+    padding: 0.2rem 0.2rem !important;
+    margin-bottom: 0rem !important;
+    border: 2px solid transparent !important;
+    border-radius: 0.3rem !important;
+    border-color: #ffd900 !important;
+    background-color: rgb(53, 51, 51) !important;
+    margin-left: 0 !important;
+    overflow-wrap: break-word !important;
+}
+
+div.user-message .sender-name {
+    display: inline !important;
+    color: #fff;
+    font-weight: 550 !important;
+}
+
+div.not-user-message .sender-name {
+    display: inline !important;
+    color: #fff !important;
+    font-weight: 550 !important;
+}
+
+.text-nav-default {
+    color: aliceblue !important;
+}
+
+.btn-blue {
+    background-color: #08f6ce !important;
+    box-shadow: 0 0 0 0 !important;
+}
+
+.btn-blue:hover {
+    background-color: #ffff00 !important;
+    transition: 0.25s;
+}
+
+.nav li.active a.text-nav{
+    color: #08f6ce !important;
+}
+
+.nav li a.text-nav{
+    color: aliceblue !important;
+}
+
+.btn-warning{
+    background-color: #ffd900 !important;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.15rem rgba(0, 255, 255, 0.5) !important;
+}
+
+p.not-user-msg-time {
+    position: relative !important;
+    margin-top: 0.1rem !important;
+    margin-left: 0 !important;
+    text-align: start !important;
+    color: rgba(255,255,255,0.5) !important;
+    font-size: 10px !important;
+}
+
+p.user-msg-time {
+    position: relative !important;
+    margin-top: 0.1rem !important;
+    margin-right: 0 !important;
+    text-align: end !important;
+    color: rgba(255,255,255,0.5) !important;
+    font-size: 10px !important;
+}
+
+div.chat {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+form.chat-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nav-tabs {
+    border-bottom: 0.08rem solid #dee2e6;
+}
+
+.bg-dark {
+    background: #191919 !important;
+}
+
+.btn-send {
+    background-color: #ffd900;
+    width: 5rem !important;
+}
+
+.btn-send:hover {
+    background-color: #08f6ce;
+}
+
+a.profile-link {
+    color: #fff;
+    font-size: 1.5rem !important;
+}
+
+a.profile-link:hover {
+    color: #08f6ce;
+}
+
+.chat-link {
+    background-color: rgb(100, 99, 99) !important;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 24px;
+    color: #ffd900 !important;
+    text-decoration: none !important;
+    transition: 0.25s;
+}
+
+.chat-link:hover {
+    color: #08f6ce !important;
+    padding-right: 4rem;
+    padding-left: 4rem;
+}
+
+.online {
+    color: #5ff608 !important;
+    font-style: italic;
+}
+
+.offline {
+    color:red !important;
+    font-style: italic;
+}
+
+.online-dot {
+    display: inline;
+    color: #5ff608 !important;
+    font-size: x-large;
+}
+
+.offline-dot {
+    display: inline;
+    color:red !important;
+    font-size: x-large;
+}
+
+p.unread-msg {
+    display: inline;
+    color: red !important;
+    font-style: italic;
+}
+
+hr.unread-msg {
+    border: 0 !important;
+    height: 0.15rem !important;
+    background-image: linear-gradient(to right, rgba(255, 0, 0, 0.3), rgba(255, 0, 0, 1), rgba(255, 0, 0, 0.3)) !important;
+}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Chat
+{% endblock %}
+
+{% block body %}
+<h2>Chat</h2>
+<br>
+
+<div class="container col-7 chat" id="chat">
+    {% if messages|length > 0 %}
+        {% set vars = {'prev_unread': False} %}
+
+        {% for message in messages %}
+            {% if message.unread and not vars.prev_unread and message.user_id != current_user.id %}
+                <div class="text-center">
+                    <p id="unread-msg" class="unread-msg mb-0">Unread Messages</p>
+                    <hr class="unread-msg mt-0">
+                </div>
+                
+                {% if vars.update({'prev_unread': True}) %} {% endif %}
+            {% endif %}
+
+            {% if message.user_id == current_user.id %}
+                <div class="col-6 container user-message">
+                    <p class="pe-2 sender-name">
+                        {{ message.user.username }}: 
+                    </p>
+                    <p style="display: inline;">
+                        {{ message.text }}
+                    </p>
+                </div>
+                <p class="user-msg-time">
+                    {{ message.date.strftime("%d/%m/%Y %H:%M:%S") }}
+                </p>
+            {% else %}
+                <div class="col-6 container not-user-message">
+                    {% if message.user.sid != None %}
+                        <p class="ps-1 pe-0 online" style="display: inline;">•</p>
+                    {% else %}
+                        <p class="ps-1 pe-0 offline" style="display: inline;">•</p>
+                    {% endif %}
+                    <p class="pe-2 sender-name" style="display: inline;">
+                        {{ message.user.username }}: 
+                    </p>
+                    <p style="display: inline;">
+                        {{ message.text }}
+                    </p>
+                </div>
+                <p class="not-user-msg-time">
+                    {{ message.date.strftime("%d/%m/%Y %H:%M:%S") }}
+                </p>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <h3 id="no-msg" class="text-center">No messages yet :(</h3>
+    {% endif %}
+    
+</div>
+
+<div class="container col-7 chat">
+    <form id="message_form" class="container mt-3 chat-form" method="POST">
+        <textarea type="text" id="message_text_area" class="form-control w-50 pb-3" placeholder="Type here..."></textarea> 
+        <br>
+        <input class="btn btn-send" value="Send" type="submit" />
+    </form>
+</div>
+
+{% endblock %}

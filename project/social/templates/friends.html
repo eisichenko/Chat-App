@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Friends
+{% endblock %}
+
+{% block body %}
+
+{% if current_user.friends|length > 0 %}
+    <div class="text-center"><h2>Friends of {{ current_user.username }}</h2></div>
+    <br>
+
+    {% for friend in current_user.friends %}
+        <div class="not-user-message col-5">
+            <div class="m-2">
+                {% if friend.sid != None %}
+                    <h6 class="online">Online</h6>
+                {% else %}
+                    <h6 class="offline">Offline</h6>
+                {% endif %}
+                <h5>Username: {{ friend.username }}</h5>
+                <h5>User ID: {{ friend.id }}</h5>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="mb-2">
+            <a href="{{ url_for('social.start_chat', other_id=friend.id) }}" class="btn btn-success me-1" type="submit">Start Chat</a>
+            <a href="{{ url_for('social.remove_friend', friend_id=friend.id) }}" class="btn btn-danger" type="submit">Remove friend</a>        
+        </div>
+
+        <br>
+    {% endfor %}
+{% else %}
+    <div class="text-center mt-5"><h2>Oh no, you have no friends :(</h2></div>
+{% endif %}
+
+<br><br>
+
+{% endblock %}

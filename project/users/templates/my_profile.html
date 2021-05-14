@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block body %}
+<h2 style="color: yellow !important;">Profile Information</h2>
+<br>
+<h4>Username: </h4>
+<form autocomplete="off" method="POST">
+    <input class="form-control w-25 me-3" type="text" style="float: left;" onkeyup="validate()" name="username" id="username" value="{{ user.username }}" placeholder="Username">
+    <input class="btn btn-send" style="float: left;" type="submit" id="submit" value="Edit">
+</form>
+
+<br><br>
+<span class="{{ span_class }}" id="username_verdict">{{ message }}</span>
+<br>
+<h4>User ID: {{ user.id }}</h4>
+<br>
+<a href="/delete" class="btn btn-danger">Delete account</a>
+{% endblock %}

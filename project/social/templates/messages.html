@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Messages
+{% endblock %}
+
+{% block body %}
+<h2>Chats</h2>
+<br>
+
+<div class="container ms-5">
+{% if chats|length > 0 %}
+    {% for chat in chats %}
+        <div id="chat{{ chat.id }}" class="mb-4">
+            {% if chat.users[0].id == current_user.id %}
+                {% if chat.users[1].sid != None %}
+                    <p class="ps-1 pe-0 online-dot">•</p>
+                {% else %}
+                    <p class="ps-1 pe-0 offline-dot">•</p>
+                {% endif %}
+
+                <a class="profile-link chat-link" href="{{ url_for('social.chat', id=chat.id) }}">{{ chat.users[1].username }}</a>
+                
+            {% else %}
+                {% if chat.users[0].sid != None %}
+                    <p class="ps-1 pe-0 online-dot">•</p>
+                {% else %}
+                    <p class="ps-1 pe-0 offline-dot">•</p>
+                {% endif %}
+                <a class="profile-link chat-link" href="{{ url_for('social.chat', id=chat.id) }}">{{ chat.users[0].username }}</a>
+                
+            {% endif %}
+
+            {% if chat.unread_messages_number > 0 and chat.messages[-1].user_id != current_user.id %}
+                <p id="unread_msg_chat{{ chat.id }}" class="unread-msg ms-3">{{ chat.unread_messages_number }} unread</p>
+            {% endif %}
+        </div>
+        
+    {% endfor %}
+{% else %}
+<div class="col-11" id="chat">
+    <h3 class="text-center">No chats yet :(</h3>
+</div>
+{% endif %}
+</div>
+
+
+{% endblock %}
