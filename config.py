@@ -5,8 +5,13 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_COOKIE_SECURE = True
 
+class HerokuConfig(Config):
+    DEBUG = False
+    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:pass@db/flask_app'
+
 class ProductionConfig(Config):
-    pass
+    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:pass@db/flask_app'
 
 class DevelopmentConfig(Config):
     DEBUG = True

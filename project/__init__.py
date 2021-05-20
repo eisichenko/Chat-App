@@ -40,21 +40,22 @@ def create_app(config_string="config.DevelopmentConfig"):
     app = Flask(__name__)
     app.config.from_object(config_string)
     
-    initialize_extensions(app)
     register_blueprints(app)
+    initialize_extensions(app)
     
     admin.init_app(app, url='/', index_view=HomeAdminView(name='Home'))
     admin.add_view(UserView(User, db.session))
     admin.add_view(ChatView(Chat, db.session))
     admin.add_view(MessageView(Message, db.session))
     
-    socketio.init_app(app, cors_allowed_origins='*')
+    socketio.init_app(app, cors_allowed_origins="*")
+        
     return app
 
 
 def initialize_extensions(app):
     db.init_app(app)
-    
+        
     login_manager.init_app(app)
 
     from project.models import User

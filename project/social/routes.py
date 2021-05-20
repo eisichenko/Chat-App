@@ -32,7 +32,7 @@ def home():
                             found_id=user.id,
                             is_friend=user in current_user.friends,
                             is_online=user.sid != None)
-        
+
 
 @social_blueprint.route('/messages/chat/<int:id>')
 @login_required

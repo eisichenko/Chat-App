@@ -9,7 +9,7 @@ $(document).ready(function () {
 
     $('#message_text_area').focus()
 
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    var socket = io.connect();
 
     var sent_msg = false
 

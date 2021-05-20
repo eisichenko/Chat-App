@@ -1,0 +1,27 @@
+version: "3.7"
+
+services: 
+    db:
+        image: mysql:latest
+        volumes: 
+            - db_data:/var/lib/mysql
+        restart: always
+        container_name: db
+        environment:
+            MYSQL_ROOT_PASSWORD: 123
+            MYSQL_DATABASE: flask_app
+            MYSQL_USER: user
+            MYSQL_PASSWORD: pass
+
+    flask:
+        image: eisichenko/isp_lab4_flask
+        container_name: flask
+        restart: always
+        command: gunicorn --worker-class eventlet -w 1 -b :8000 --log-level debug "app:app"
+        depends_on: 
+            - db
+        ports:
+            - 5000:8000
+
+volumes: 
+    db_data: {}
