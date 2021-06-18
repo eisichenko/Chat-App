@@ -2,24 +2,23 @@ from project import db, create_app, socketio
 from project.models import *
 import time
 
-# app = create_app("config.ProductionConfig")
-# app = create_app("config.DevelopmentConfig")
-app = create_app("config.HerokuConfig")
 
 # to run from gunicorn
 if __name__ == 'app':
+    app = create_app("config.ProductionConfig")
+    
     n = 0
     max_n = 100
     
-    print('Waiting for db ', flush=True)
+    print('Waiting for db', flush=True)
     
     exception = None
 
     while n < max_n or True:
         try:
             with app.app_context():
-                # db.init_app(app)
-                # db.drop_all()
+                db.init_app(app)
+                db.drop_all()
                 db.create_all()
             break
         except Exception as e:
@@ -27,6 +26,7 @@ if __name__ == 'app':
             # print(f'Attempt to connect: {n + 1}/{max_n}', flush=True)
             n += 1
             exception = e
+            print(str(e))
     
     if n == max_n:
         raise Exception(str(e))
@@ -62,6 +62,7 @@ if __name__ == 'app':
 
 # to run from localhost
 if __name__ == '__main__':
+    app = create_app("config.DevelopmentConfig")
     
     with app.app_context():
         # db.drop_all()

@@ -18,7 +18,10 @@ def home():
     if username == current_user.username:
         return redirect(url_for('users.my_profile'))
     
-    user = User.query.filter_by(username=username).first()
+    try:
+        user = User.query.filter_by(username=username).first()
+    except:
+        pass
     
     if (user is None):
         return render_template('home.html', 
@@ -46,20 +49,30 @@ def chat(id):
     
     page = render_template('chat.html', messages=chat.messages, current_user=current_user)
     
-    if (chat.unread_messages_number > 0):
-        sent_user = False
+    try:
+        if len(chat.messages) > 0 and chat.messages[-1].user_id != current_user.id:
+            for message in chat.messages:
+                if message.unread:
+                    if message.user_id == current_user.id:
+                        message.unread = False
+                        if chat.unread_messages_number > 0:
+                            chat.unread_messages_number -= 1
         
-        for message in chat.messages:
-            if message.unread:
-                if message.user_id != current_user.id:
-                    message.unread = False
-                else:
-                    sent_user = True
-                    break
-        
-        if not sent_user:
-            chat.unread_messages_number = 0
-            db.session.commit()
+        if (chat.unread_messages_number > 0):
+            
+            for message in chat.messages:
+                if message.unread:
+                    if message.user_id != current_user.id:
+                        message.unread = False
+                        if chat.unread_messages_number > 0:
+                            chat.unread_messages_number -= 1
+            
+            if len(chat.messages) > 0 and chat.messages[-1].user_id != current_user.id:
+                chat.unread_messages_number = 0
+    except:
+        return redirect('/messages')
+
+    db.session.commit()
     
     return page
 
@@ -82,19 +95,22 @@ def start_chat(other_id):
         if chat.users[0].id == other_id or chat.users[1].id == other_id:
             return redirect(url_for('social.chat', id=chat.id))
     
-    new_chat = Chat(unread_messages_number=0)
+    try:
+        new_chat = Chat(unread_messages_number=0)
+        
+        threads = [threading.Thread(target=db.session.add(new_chat)),
+                threading.Thread(target=new_chat.users.append(current_user)),
+                threading.Thread(target=new_chat.users.append(other_user))]
+        
+        for thread in threads:
+            thread.start()
+        
+        for thread in threads:
+            thread.join()
     
-    threads = [threading.Thread(target=db.session.add(new_chat)),
-               threading.Thread(target=new_chat.users.append(current_user)),
-               threading.Thread(target=new_chat.users.append(other_user))]
-    
-    for thread in threads:
-        thread.start()
-    
-    for thread in threads:
-        thread.join()
-    
-    db.session.commit()
+        db.session.commit()
+    except:
+        return redirect('/messages')
     
     socketio.emit('join', json={'chat_id': new_chat.id, 
                                 'user1_sid': current_user.sid, 
@@ -120,16 +136,19 @@ def add_friend(friend_id):
     if (friend_user == None or friend_user in current_user.friends):
         return redirect(url_for('social.friends'))
     
-    threads = [threading.Thread(target=current_user.friends.append(friend_user)),
-               threading.Thread(target=friend_user.friends.append(current_user))]
-    
-    for thread in threads:
-        thread.start()
-    
-    for thread in threads:
-        thread.join()
-    
-    db.session.commit()
+    try:
+        threads = [threading.Thread(target=current_user.friends.append(friend_user)),
+                threading.Thread(target=friend_user.friends.append(current_user))]
+        
+        for thread in threads:
+            thread.start()
+        
+        for thread in threads:
+            thread.join()
+        
+        db.session.commit()
+    except:
+        return redirect('/friends')
     
     return render_template('friends.html', current_user=current_user)
 
@@ -145,15 +164,18 @@ def remove_friend(friend_id):
     if (friend_user == None or not friend_user in current_user.friends):
         return redirect(url_for('social.friends'))
     
-    threads = [threading.Thread(target=current_user.friends.remove(friend_user)),
-               threading.Thread(target=friend_user.friends.remove(current_user))]
-    
-    for thread in threads:
-        thread.start()
-    
-    for thread in threads:
-        thread.join()
-    
-    db.session.commit()
+    try:
+        threads = [threading.Thread(target=current_user.friends.remove(friend_user)),
+                threading.Thread(target=friend_user.friends.remove(current_user))]
+        
+        for thread in threads:
+            thread.start()
+        
+        for thread in threads:
+            thread.join()
+        
+        db.session.commit()
+    except:
+        return redirect('/friends')
     
     return render_template('friends.html', current_user=current_user)

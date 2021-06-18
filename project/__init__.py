@@ -1,12 +1,13 @@
 from flask import Flask, abort
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.pool import QueuePool
 from flask_socketio import SocketIO
 from flask_login import LoginManager, login_manager, current_user
 from werkzeug import debug
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 
-db = SQLAlchemy()
+db = SQLAlchemy(engine_options={"pool_size": 10, "poolclass":QueuePool, "pool_pre_ping":True})
 
 from project.models import *
 

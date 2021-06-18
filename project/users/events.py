@@ -20,14 +20,20 @@ def connect():
     for chat in current_user.chats:
         join_room(str(chat.id))
         
-    current_user.sid = request.sid
-    db.session.commit()
+    try:
+        current_user.sid = request.sid
+        db.session.commit()
+    except:
+        pass
     
 
 @socketio.on('disconnect')
 def disconnect():
     print(f'disconnected: {current_user.username}')
     
-    current_user.sid = None
-    
-    db.session.commit()
+    try:
+        current_user.sid = None
+        
+        db.session.commit()
+    except:
+        pass

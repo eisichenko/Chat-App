@@ -4,23 +4,25 @@ from datetime import datetime
 from sqlalchemy import event
 from werkzeug.security import generate_password_hash
 
+collation = 'utf8_bin'
+
 
 chats_table = db.Table('chats',
     db.Column('user_id', db.BigInteger, db.ForeignKey('user.id'), primary_key=True),
     db.Column('chat_id', db.BigInteger, db.ForeignKey('chat.id'), primary_key=True),
-    mysql_collate = 'utf8mb4_0900_as_cs'
+    mysql_collate = collation
 )
 
 
 friends_table = db.Table('friends',
     db.Column('user_id', db.BigInteger, db.ForeignKey('user.id'), primary_key=True),
     db.Column('friend_id', db.BigInteger, db.ForeignKey('user.id'), primary_key=True),
-    mysql_collate = 'utf8mb4_0900_as_cs'
+    mysql_collate = collation
 )
 
 
 class User(UserMixin, db.Model):
-    __table_args__ = {'mysql_collate': 'utf8mb4_0900_as_cs'}
+    __table_args__ = {'mysql_collate': collation}
     id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.Unicode(15), nullable=False, unique=True)
     password = db.Column(db.Unicode(80), nullable=False)
@@ -46,7 +48,7 @@ def hash_user_password(target, value, oldvalue, initiator):
 
 
 class Message(db.Model):
-    __table_args__ = {'mysql_collate': 'utf8mb4_0900_as_cs'}
+    __table_args__ = {'mysql_collate': collation}
     id = db.Column(db.BigInteger, primary_key=True)
     text = db.Column(db.UnicodeText, nullable=False)
     user_id = db.Column(db.BigInteger, db.ForeignKey('user.id'), nullable=False)
@@ -59,7 +61,7 @@ class Message(db.Model):
 
 
 class Chat(db.Model):
-    __table_args__ = {'mysql_collate': 'utf8mb4_0900_as_cs'}
+    __table_args__ = {'mysql_collate': collation}
     id = db.Column(db.BigInteger, primary_key=True)
     unread_messages_number = db.Column(db.BigInteger, default=0, nullable=False)
     messages = db.relationship('Message', backref='chat', lazy=True)
