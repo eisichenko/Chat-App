@@ -1,9 +1,25 @@
 import os
+import random
+import string
+
+
+def random_string(n=random.randint(100, 150)):
+    symbols = string.digits + string.ascii_letters + string.punctuation + ' '
+    return ''.join(random.choice(symbols) for _ in range(n))
+
+
+LOCAL_ENV = 'local'
+HEROKU_ENV = 'heroku'
+TRAVIS_ENV = 'travis'
+DOCKER_ENV = 'docker-compose'
+
+ENV = os.environ.get('ENV', LOCAL_ENV)
+
 
 class Config(object):
     DEBUG = False
     TESTING = False
-    SECRET_KEY = 'qweqwe O_o 123321'
+    SECRET_KEY = random_string()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_COOKIE_SECURE = True
 
@@ -12,25 +28,26 @@ class ProductionConfig(Config):
     DEBUG = False
     
     url = os.environ.get('CLEARDB_DATABASE_URL', None)
+    
     if url:
         SQLALCHEMY_DATABASE_URI = 'mysql+pymysql' + url[5:-15]
-    else:
-        SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:pass@db/flask_app'
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
-
     SESSION_COOKIE_SECURE = False
     
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123@localhost/flask_app'
+    if ENV == LOCAL_ENV:
+        SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123@localhost/flask_app'
+    elif ENV == DOCKER_ENV:
+        SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:pass@db/flask_app'    
 
 
 class TestingConfig(Config):
     TESTING = True
-    
-    # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123@localhost/test_flask_app'
-    
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:''@localhost/travis'
-
     SESSION_COOKIE_SECURE = False
+    
+    if ENV == TRAVIS_ENV:
+        SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:''@localhost/travis'
+    elif ENV == LOCAL_ENV:
+        SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123@localhost/test_flask_app'

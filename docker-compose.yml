@@ -18,6 +18,8 @@ services:
         container_name: flask
         restart: always
         command: gunicorn --worker-class eventlet -w 1 -b :8000 --log-level debug "app:app"
+        environment: 
+            - ENV=docker-compose
         depends_on: 
             - db
         ports:

@@ -7,6 +7,7 @@ from werkzeug import debug
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 
+
 db = SQLAlchemy(engine_options={"pool_size": 10, "poolclass":QueuePool, "pool_pre_ping":True})
 
 from project.models import *
@@ -37,7 +38,7 @@ class HomeAdminView(AdminIndexView):
         abort(404)
 
 
-def create_app(config_string="config.DevelopmentConfig"):
+def create_app(config_string):
     app = Flask(__name__)
     app.config.from_object(config_string)
     
