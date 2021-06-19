@@ -12,46 +12,52 @@ import config
 
 
 if __name__ == '__main__':
-    config.RECREATION_OF_DATABASE = True
+    print('Are you sure to truncate all tables in database? (y/n) ', flush=True)
+    ans = input()
     
-    from app import app
-    
-    with app.app_context():
-        print('Waiting for db...', flush=True)
-
-        while True:
-            try:
-                db.drop_all()
-                db.create_all()
-                break
-            except Exception as e:
-                print(e, flush=True)
-                time.sleep(1)
-
-        print('Database recreated!', flush=True)
-
-        users = User.query.all()
-
-        for user in users:
-            user.sid = None
-            
-        admin = User.query.filter_by(is_admin=True).first()
+    if ans == 'y':
+        config.RECREATION_OF_DATABASE = True
         
-        if admin == None:
-            print('No admin user was found! Creating default admin...', flush=True)
-            print('You can change data later', flush=True)
-            username = 'admin'
-            password = '123'
-            admin = User(username=username, 
-                        password=password,
-                        is_admin=True)
-            
-            db.session.add(admin)
+        from app import app
+        
+        with app.app_context():
+            print('Waiting for db...', flush=True)
 
-            db.session.commit()
+            while True:
+                try:
+                    db.drop_all()
+                    db.create_all()
+                    break
+                except Exception as e:
+                    print(e, flush=True)
+                    time.sleep(1)
+
+            print('Database recreated!', flush=True)
+
+            users = User.query.all()
+
+            for user in users:
+                user.sid = None
+                
+            admin = User.query.filter_by(is_admin=True).first()
             
-            print('\nCreated default admin user:', flush=True)
-            print(f'USERNAME: {username}', flush=True)
-            print(f'PASSWORD: {password}', flush=True)
-            
-    config.RECREATION_OF_DATABASE = False
+            if admin == None:
+                print('No admin user was found! Creating default admin...', flush=True)
+                print('You can change data later', flush=True)
+                username = 'admin'
+                password = '123'
+                admin = User(username=username, 
+                            password=password,
+                            is_admin=True)
+                
+                db.session.add(admin)
+
+                db.session.commit()
+                
+                print('\nCreated default admin user:', flush=True)
+                print(f'USERNAME: {username}', flush=True)
+                print(f'PASSWORD: {password}', flush=True)
+                
+        config.RECREATION_OF_DATABASE = False
+    else:
+        print('Operation was interrupted.')
