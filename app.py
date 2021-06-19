@@ -2,11 +2,12 @@ from project import db, create_app, socketio
 from project.models import *
 import time
 import config
+import os
 
 
 app = create_app(config.get_config_string())
 
-if __name__ == '__main__' or config.ENV != config.LOCAL_ENV:
+if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and not os.environ.get('recreation_db', False):
     with app.app_context():
         print('Waiting for db...', flush=True)
 
