@@ -1,10 +1,14 @@
+import os
+
+os.environ['recreation_db'] = 'true'
+
 from app import app
 from project.models import *
 import time
-import os
+
 
 if __name__ == '__main__':
-    os.environ['recreation_db'] = 'true'
+    
     
     with app.app_context():
         print('Waiting for db...', flush=True)
@@ -44,4 +48,4 @@ if __name__ == '__main__':
             print(f'USERNAME: {username}', flush=True)
             print(f'PASSWORD: {password}', flush=True)
 
-    os.environ['recreation_db'] = 'false'
+os.environ['recreation_db'] = 'false'
