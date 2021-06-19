@@ -1,3 +1,11 @@
+import sys
+import os
+
+if os.getcwd().endswith('.scripts'):
+    sys.path.append('..')
+else:
+    sys.path.append(os.getcwd())
+
 from project.models import *
 import time
 import config
