@@ -46,5 +46,5 @@ if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and not config.REC
 
         print('Server started!', flush=True)
         
-        if config.ENV == config.DOCKER_ENV or config.ENV == config.LOCAL_ENV:
+        if config.ENV == config.LOCAL_ENV:
             socketio.run(app, debug=True, use_reloader=False)
