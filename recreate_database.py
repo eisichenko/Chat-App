@@ -4,7 +4,7 @@ import time
 import os
 
 if __name__ == '__main__':
-    os.environ['recreation_db'] = True
+    os.environ['recreation_db'] = 'true'
     
     with app.app_context():
         print('Waiting for db...', flush=True)
@@ -44,4 +44,4 @@ if __name__ == '__main__':
             print(f'USERNAME: {username}', flush=True)
             print(f'PASSWORD: {password}', flush=True)
 
-    os.environ['recreation_db'] = False
+    os.environ['recreation_db'] = 'false'

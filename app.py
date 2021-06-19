@@ -7,7 +7,7 @@ import os
 
 app = create_app(config.get_config_string())
 
-if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and not os.environ.get('recreation_db', False):
+if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and os.environ.get('recreation_db', 'false') != 'true':
     with app.app_context():
         print('Waiting for db...', flush=True)
 
