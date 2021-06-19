@@ -1,14 +1,12 @@
-import os
-
-os.environ['recreation_db'] = 'true'
-
-from app import app
 from project.models import *
 import time
+import config
 
 
 if __name__ == '__main__':
+    config.RECREATION_OF_DATABASE = True
     
+    from app import app
     
     with app.app_context():
         print('Waiting for db...', flush=True)
@@ -47,5 +45,5 @@ if __name__ == '__main__':
             print('\nCreated default admin user:', flush=True)
             print(f'USERNAME: {username}', flush=True)
             print(f'PASSWORD: {password}', flush=True)
-
-os.environ['recreation_db'] = 'false'
+            
+    config.RECREATION_OF_DATABASE = False

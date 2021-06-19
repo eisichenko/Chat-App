@@ -23,6 +23,8 @@ DOCKER_ENV = 'docker-compose'
 
 ENV = os.environ.get('ENV', LOCAL_ENV)
 
+RECREATION_OF_DATABASE = False
+
 
 class Config(object):
     DEBUG = False
