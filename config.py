@@ -8,6 +8,14 @@ def random_string(n=random.randint(100, 150)):
     return ''.join(random.choice(symbols) for _ in range(n))
 
 
+def get_config_string():
+    if ENV == HEROKU_ENV:
+        return 'config.ProductionConfig'
+    elif ENV == LOCAL_ENV or ENV == DOCKER_ENV:
+        return 'config.DevelopmentConfig'
+    raise ValueError('No configuration')
+
+
 LOCAL_ENV = 'local'
 HEROKU_ENV = 'heroku'
 TRAVIS_ENV = 'travis'

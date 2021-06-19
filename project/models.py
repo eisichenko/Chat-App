@@ -22,6 +22,7 @@ friends_table = db.Table('friends',
 
 
 class User(UserMixin, db.Model):
+    __tablename__ = 'user'
     __table_args__ = {'mysql_collate': collation}
     id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.Unicode(15), nullable=False, unique=True)
@@ -48,6 +49,7 @@ def hash_user_password(target, value, oldvalue, initiator):
 
 
 class Message(db.Model):
+    __tablename__ = 'message'
     __table_args__ = {'mysql_collate': collation}
     id = db.Column(db.BigInteger, primary_key=True)
     text = db.Column(db.UnicodeText, nullable=False)
@@ -61,6 +63,7 @@ class Message(db.Model):
 
 
 class Chat(db.Model):
+    __tablename__ = 'chat'
     __table_args__ = {'mysql_collate': collation}
     id = db.Column(db.BigInteger, primary_key=True)
     unread_messages_number = db.Column(db.BigInteger, default=0, nullable=False)

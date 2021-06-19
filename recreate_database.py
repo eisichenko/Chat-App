@@ -1,24 +1,22 @@
-from project import db, create_app, socketio
+from app import app
 from project.models import *
 import time
-import config
 
 
-app = create_app(config.get_config_string())
-
-if __name__ == '__main__' or config.ENV != config.LOCAL_ENV:
+if __name__ == '__main__':
     with app.app_context():
         print('Waiting for db...', flush=True)
 
         while True:
             try:
+                db.drop_all()
                 db.create_all()
                 break
             except Exception as e:
                 print(e, flush=True)
                 time.sleep(1)
 
-        print('Connection established!', flush=True)
+        print('Database recreated!', flush=True)
 
         users = User.query.all()
 
@@ -43,9 +41,3 @@ if __name__ == '__main__' or config.ENV != config.LOCAL_ENV:
             print('\nCreated default admin user:', flush=True)
             print(f'USERNAME: {username}', flush=True)
             print(f'PASSWORD: {password}', flush=True)
-
-
-        print('Server started!', flush=True)
-        
-        if config.ENV == config.DOCKER_ENV or config.ENV == config.LOCAL_ENV:
-            socketio.run(app, debug=True, use_reloader=False)
