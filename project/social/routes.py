@@ -23,7 +23,7 @@ def home():
     except:
         pass
     
-    if (user is None):
+    if user == None:
         return render_template('home.html', 
                             username=current_user.username,
                             span_class='invalid', 

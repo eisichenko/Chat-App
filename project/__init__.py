@@ -24,8 +24,8 @@ class UserView(ModelView):
 
 class ChatView(ModelView):
     column_list = ['id', 'unread_messages_number']
-    
-    
+
+
 class MessageView(ModelView):
     column_list = ['id', 'text', 'unread', 'date', 'user', 'chat']
     

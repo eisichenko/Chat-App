@@ -44,7 +44,7 @@ if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and not config.REC
             print(f'PASSWORD: {password}', flush=True)
 
 
-        print('Server started!', flush=True)
-        
-        if config.ENV == config.LOCAL_ENV:
-            socketio.run(app, debug=True, use_reloader=False)
+    print('Server started!', flush=True)
+
+    if config.ENV == config.LOCAL_ENV:
+        socketio.run(app, debug=True, use_reloader=False)

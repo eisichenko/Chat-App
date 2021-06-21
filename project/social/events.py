@@ -16,7 +16,11 @@ def send_message_event(json):
         else:
             return
         
-        message = Message(text=json['message'], user=current_user, date=datetime.now(), chat_id=chat_id, unread=True)
+        message = Message(text=json['message'], 
+                          user=current_user, 
+                          date=datetime.now(), 
+                          chat_id=chat_id, 
+                          unread=True)
 
         json['time'] = message.date.strftime("%d/%m/%Y %H:%M:%S")
         json['username'] = current_user.username

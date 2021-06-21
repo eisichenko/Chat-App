@@ -1,6 +1,6 @@
 from project.models import User
 from flask import render_template, request, redirect, url_for, session
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from project import db
 
