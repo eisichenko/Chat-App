@@ -60,6 +60,10 @@ def test_join_room():
     socketio_test_client2 = socketio.test_client(test_app, flask_test_client=flask_test_client2)
     socketio_test_client3 = socketio.test_client(test_app, flask_test_client=flask_test_client3)
     
+    socketio_test_client1.get_received()
+    socketio_test_client2.get_received()
+    socketio_test_client3.get_received()
+    
     socketio_test_client1.emit('join', json)
     
     socketio_test_client1.emit('send message', { 'message': 'some message for room' }, room=str(chat_id))

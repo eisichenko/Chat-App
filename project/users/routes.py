@@ -2,7 +2,7 @@ from project.models import User
 from flask import render_template, request, redirect, url_for, session
 from werkzeug.security import check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-from project import db
+from project import db, socketio
 
 from . import users_blueprint
 
@@ -118,6 +118,7 @@ def my_profile():
             if valid_username:
                 user.username = username
                 db.session.commit()
+                socketio.emit('setup connection', { "username": current_user.username }, room=request.sid)
                 return redirect(url_for('users.my_profile'))
                         
             return render_template('my_profile.html',
