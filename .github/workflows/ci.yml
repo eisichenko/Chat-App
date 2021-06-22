@@ -38,7 +38,7 @@ jobs:
     - name: Pushing to dockerhub    
       if: job.status == 'success'
       env:
-        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_USER: eisichenko
+        DOCKER_REPO: eisichenko/chat_app_flask
         DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
-        DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
       run: bash .scripts/docker_push.sh
