@@ -55,6 +55,8 @@ $(document).ready(function () {
 
         if (msg && msg.length > 0)
         {
+            $('#message_text_area').val('').focus()
+
             var message_box = $('<div class="col-6 container user-message"></div>');
 
             var name_tag = $('<p class="pe-2 sender-name"></p>')
@@ -79,8 +81,6 @@ $(document).ready(function () {
             $('#chat').append(time_tag)
 
             $('html, body').scrollTop( $('#chat').height() );
-    
-            $('#message_text_area').val('').focus()
 
             socket.emit('send message', {
                 message: msg
@@ -155,11 +155,25 @@ $(document).ready(function () {
     }
     
 
+    var limit_verdict = document.getElementById("server_verdict")
+
     $('#message_text_area').keypress(function(event){
         var keycode = (event.keyCode ? event.keyCode : event.which);
-        if(keycode == '13'){
+        if(keycode == '13') {
             event.preventDefault()
             $('#message_form').trigger('submit')
+        }
+    });
+
+    $('#message_text_area').keyup(function(event){
+        var keycode = (event.keyCode ? event.keyCode : event.which);
+        
+        if ($("#message_text_area").val().length >= 1000 && keycode != '8' && keycode != '46') {
+            event.preventDefault()
+            limit_verdict.innerHTML = "Limit 1000 characters"
+        }
+        else if ($("#message_text_area").val().length >= 0 && $("#message_text_area").val().length < 1000){
+            limit_verdict.innerHTML = "<br>"
         }
     });
 });

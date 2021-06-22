@@ -61,8 +61,8 @@ Chat
 
 <div class="container col-7 chat">
     <form id="message_form" class="container mt-3 chat-form" method="POST">
-        <textarea type="text" id="message_text_area" class="form-control w-50 pb-3" placeholder="Type here..."></textarea> 
-        <br>
+        <textarea type="text" id="message_text_area" class="form-control w-50 pb-3" maxlength="1000" placeholder="Type here..."></textarea> 
+        <span class="invalid" id="server_verdict"><br></span>
         <input class="btn btn-send" value="Send" type="submit" />
     </form>
 </div>

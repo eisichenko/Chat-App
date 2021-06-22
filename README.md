@@ -8,7 +8,7 @@
 
 - Use `incognito` to login from multiple accounts or `MultiLogin` extension in Google Chrome
 
-- Used Github Actions for development with ci/cd
+- Used `Github Actions` for development with ci/cd
 
 - dockerhub: https://hub.docker.com/repository/docker/eisichenko/chat_app_flask
 

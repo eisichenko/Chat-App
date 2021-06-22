@@ -2,12 +2,17 @@ from project import socketio
 from flask import session
 from flask_login import current_user
 from project.models import *
-import threading
 import concurrent.futures
+import config
 
 
 @socketio.on('send message')
 def send_message_event(json):
+    if json['message'] == None or len(json['message']) == 0:
+        return
+    
+    json['message'] = json['message'][:min(1000, len(json['message']))]
+    
     print('received data: ' + str(json))
     
     if 'current_chat_id' in session.keys():
