@@ -16,7 +16,6 @@ jobs:
         sudo systemctl enable mysql.service
         sudo systemctl start mysql.service
         mysql -uroot -proot -e "CREATE DATABASE test_flask_app;"
-
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
@@ -35,4 +34,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Testing
       run: |
-        pytest
+        pytest -v

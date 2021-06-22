@@ -18,7 +18,7 @@ def get_config_string():
 
 LOCAL_ENV = 'local'
 HEROKU_ENV = 'heroku'
-GITHUB_ENV = 'github'
+GITHUB_ENV = 'github-actions'
 DOCKER_ENV = 'docker-compose'
 
 ENV = os.environ.get('ENV', LOCAL_ENV)
