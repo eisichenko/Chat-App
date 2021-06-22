@@ -18,7 +18,7 @@ def get_config_string():
 
 LOCAL_ENV = 'local'
 HEROKU_ENV = 'heroku'
-TRAVIS_ENV = 'travis'
+GITHUB_ENV = 'github'
 DOCKER_ENV = 'docker-compose'
 
 ENV = os.environ.get('ENV', LOCAL_ENV)
@@ -57,7 +57,7 @@ class TestingConfig(Config):
     TESTING = True
     SESSION_COOKIE_SECURE = False
     
-    if ENV == TRAVIS_ENV:
-        SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:''@localhost/travis'
+    if ENV == GITHUB_ENV:
+        SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:root@localhost/test_flask_app'
     elif ENV == LOCAL_ENV:
         SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123@localhost/test_flask_app'
