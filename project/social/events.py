@@ -39,7 +39,7 @@ def send_message_event(json):
     json['current_unread'] = chat.unread_messages_number
     json['message_id'] = message.id
     
-    socketio.emit('update messages', json, room=str(chat_id), broadcast=True)
+    socketio.emit('update messages', json, room=str(chat_id), include_self=False)
 
 
 @socketio.on('read')
