@@ -4,6 +4,7 @@ from flask_login import current_user
 from flask_socketio import join_room
 from project.models import *
 
+
 @socketio.on('join')
 def join(json):
     join_room(str(json['chat_id']), sid=json['user1_sid'])
@@ -30,5 +31,4 @@ def disconnect():
     print(f'disconnected: {current_user.username}')
     
     current_user.sid = None
-    
     db.session.commit()

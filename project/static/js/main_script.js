@@ -19,7 +19,6 @@ $(document).ready(function () {
 
     var min_diff = 1e9
     var min_href = undefined
-    var current_user = undefined
 
     // highlighting navigation bar
     $('a').each(function (_, cur_ref) {
@@ -61,7 +60,7 @@ $(document).ready(function () {
 
             var name_tag = $('<p class="pe-2 sender-name"></p>')
 
-            name_tag.append(document.createTextNode(current_user.username + ': '))
+            name_tag.append(document.createTextNode(localStorage['currentUsername'] + ': '))
 
             var msg_tag = $('<p style="display: inline;"></p>')
 
@@ -91,7 +90,8 @@ $(document).ready(function () {
     })
 
     socket.on('setup connection', function(json) {
-        current_user = json
+        if (json['username'])
+            localStorage['currentUsername'] = json['username']
     })
 
     socket.on('update messages', function (json) {
@@ -110,30 +110,58 @@ $(document).ready(function () {
         }
         else if (href.endsWith('/messages/chat/' + json.chat_id))
         {
-            var message_box = $('<div class="col-6 container not-user-message"></div>');
+            if (json.username == localStorage['currentUsername']) {
+                $('#message_text_area').val('').focus()
 
-            var online_tag = $('<p class="ps-1 pe-0 online" style="display: inline;">• </p>')
+                var message_box = $('<div class="col-6 container user-message"></div>');
 
-            var name_tag = $('<p class="pe-2 sender-name"></p>')
+                var name_tag = $('<p class="pe-2 sender-name"></p>')
 
-            name_tag.append(document.createTextNode(json.username + ':'))
+                name_tag.append(document.createTextNode(localStorage['currentUsername'] + ': '))
 
-            var msg_tag = $('<p style="display: inline;"></p>')
+                var msg_tag = $('<p style="display: inline;"></p>')
 
-            msg_tag.append(document.createTextNode(json.message))
+                msg_tag.append(document.createTextNode(msg))
 
-            message_box.append(online_tag)
-            message_box.append(name_tag)
-            message_box.append(msg_tag)
-            
-            $('#chat').append(message_box)
+                message_box.append(name_tag)
+                message_box.append(msg_tag)
 
-            var time_tag = $('<p class="not-user-msg-time"></p>')
-            time_tag.append(document.createTextNode(json.time))
+                $('#no-msg').remove()
+                
+                $('#chat').append(message_box)
 
-            $('#chat').append(time_tag)
+                var time_tag = $('<p class="user-msg-time"></p>')
 
-            socket.emit('read', json)
+                time_tag.append(document.createTextNode(getCurrentTime()))
+
+                $('#chat').append(time_tag)
+            }
+            else {
+                var message_box = $('<div class="col-6 container not-user-message"></div>');
+
+                var online_tag = $('<p class="ps-1 pe-0 online" style="display: inline;">• </p>')
+
+                var name_tag = $('<p class="pe-2 sender-name"></p>')
+
+                name_tag.append(document.createTextNode(json.username + ':'))
+
+                var msg_tag = $('<p style="display: inline;"></p>')
+
+                msg_tag.append(document.createTextNode(json.message))
+
+                message_box.append(online_tag)
+                message_box.append(name_tag)
+                message_box.append(msg_tag)
+                
+                $('#chat').append(message_box)
+
+                var time_tag = $('<p class="not-user-msg-time"></p>')
+                time_tag.append(document.createTextNode(json.time))
+
+                $('#chat').append(time_tag)
+
+                socket.emit('read', json)
+            }
         }
         else
         {

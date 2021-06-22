@@ -3,7 +3,6 @@ from flask import session
 from flask_login import current_user
 from project.models import *
 import concurrent.futures
-import config
 
 
 @socketio.on('send message')
