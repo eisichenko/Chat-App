@@ -67,6 +67,8 @@ $(document).ready(function () {
 
             message_box.append(name_tag)
             message_box.append(msg_tag)
+
+            $('#no-msg').remove()
             
             $('#chat').append(message_box)
 
