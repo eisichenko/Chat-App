@@ -4,7 +4,7 @@ branch=${GITHUB_REF##*/}
 
 docker login -u $DOCKER_USER -p $DOCKER_PASS
 
-TAG="tmp"
+TAG="hahah"
 docker build -f Dockerfile -t $DOCKER_REPO:$TAG .
 docker push $DOCKER_REPO:$TAG
 
