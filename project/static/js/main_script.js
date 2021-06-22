@@ -56,31 +56,6 @@ $(document).ready(function () {
         {
             $('#message_text_area').val('').focus()
 
-            var message_box = $('<div class="col-6 container user-message"></div>');
-
-            var name_tag = $('<p class="pe-2 sender-name"></p>')
-
-            name_tag.append(document.createTextNode(localStorage['currentUsername'] + ': '))
-
-            var msg_tag = $('<p style="display: inline;"></p>')
-
-            msg_tag.append(document.createTextNode(msg))
-
-            message_box.append(name_tag)
-            message_box.append(msg_tag)
-
-            $('#no-msg').remove()
-            
-            $('#chat').append(message_box)
-
-            var time_tag = $('<p class="user-msg-time"></p>')
-
-            time_tag.append(document.createTextNode(getCurrentTime()))
-
-            $('#chat').append(time_tag)
-
-            $('html, body').scrollTop( $('#chat').height() );
-
             socket.emit('send message', {
                 message: msg
             })
@@ -121,13 +96,11 @@ $(document).ready(function () {
 
                 var msg_tag = $('<p style="display: inline;"></p>')
 
-                msg_tag.append(document.createTextNode(msg))
+                msg_tag.append(document.createTextNode(json.message))
 
                 message_box.append(name_tag)
                 message_box.append(msg_tag)
 
-                $('#no-msg').remove()
-                
                 $('#chat').append(message_box)
 
                 var time_tag = $('<p class="user-msg-time"></p>')
