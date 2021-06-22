@@ -37,4 +37,8 @@ jobs:
         pytest -v
     - name: Pushing to dockerhub    
       if: job.status == 'success'
+      env:
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+        DOCKER_REPO: ${{ secrets.DOCKER_REPO }}
       run: bash .scripts/docker_push.sh
