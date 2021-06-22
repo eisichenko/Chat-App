@@ -36,5 +36,5 @@ jobs:
       run: |
         pytest -v
     - name: Pushing to dockerhub    
-      if: github.ref == 'refs/heads/production' && job.status == 'success'
+      if: job.status == 'success'
       run: bash .scripts/docker_push.sh
