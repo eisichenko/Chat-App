@@ -53,18 +53,21 @@ def chat(id):
                            current_user=current_user,
                            hours_delta=hours_delta)
     
-    if len(messages) == 0:
+    if (len(messages) == 0 or 
+        messages[-1].user_id == current_user.id or
+        (messages[-1].user_id != current_user.id and messages[-1].unread == False)):
         return page
     
-    unread_messages = [message for message in messages if message.user_id != current_user.id and message.unread == True]
+    unread_counter = 0
     
-    if len(unread_messages) == 0:
-        return page
+    index = len(messages) - 1
     
-    for message in unread_messages:
-        message.unread = False
+    while index > -1 and messages[index].unread and messages[index].user_id != current_user.id:
+        messages[index].unread = False
+        index -= 1
+        unread_counter += 1
         
-    chat.unread_messages_number -= len(unread_messages)
+    chat.unread_messages_number -= unread_counter
     
     db.session.commit()
     

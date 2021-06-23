@@ -174,20 +174,11 @@ def test_chat(flask_test_client):
     
     chat = current_user.chats[0]
     
-    chat.unread_messages_number = 123
-    db.session.commit()
-    
     response = flask_test_client.get('/messages/chat/' + str(chat.id))
     assert response.status_code == 200
     
     other_user_msg = Message(text='some message', 
                                  user=other_user, 
-                                 date=datetime.now(), 
-                                 chat_id=chat.id, 
-                                 unread=True)
-    
-    current_user_msg = Message(text='some user message', 
-                                 user=current_user, 
                                  date=datetime.now(), 
                                  chat_id=chat.id, 
                                  unread=True)
@@ -200,6 +191,12 @@ def test_chat(flask_test_client):
     assert not other_user_msg.unread
     assert response.status_code == 200
     assert b'Unread Messages' in response.data
+    
+    current_user_msg = Message(text='some user message', 
+                                 user=current_user, 
+                                 date=datetime.now(), 
+                                 chat_id=chat.id, 
+                                 unread=True)
     
     chat.messages.append(current_user_msg)
     chat.unread_messages_number = 1
