@@ -1,5 +1,5 @@
 from project.models import User
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, session, make_response
 from werkzeug.security import check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from project import db, socketio
@@ -10,30 +10,29 @@ from . import users_blueprint
 @users_blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        try:
-            username = request.form['username']
-            password = request.form['password']
+        username = request.form['username']
+        password = request.form['password']
+        
+        valid_username = not username is None and len(username) > 2 and len(username) < 16
+        valid_password = not password is None and len(password) > 2 and len(username) < 81
+        
+        if valid_username and valid_password:
             
-            valid_username = not username is None and len(username) > 2 and len(username) < 16
-            valid_password = not password is None and len(password) > 2 and len(username) < 81
+            db_user = User.query.filter_by(username=username).first()
             
-            if valid_username and valid_password:
-                
-                db_user = User.query.filter_by(username=username).first()
-                
-                if db_user == None or not check_password_hash(db_user.password, password):
-                    return render_template('login.html', 
-                                        span_class='invalid', 
-                                        message='Wrong username or password',
-                                        prev_username=username)
-                login_user(db_user)
-                return redirect(url_for('social.home'))
-                
-            return render_template('login.html',
-                                span_class='invalid',
-                                message='Invalid username or password')
-        except:
-            return redirect('/login')
+            if db_user == None or not check_password_hash(db_user.password, password):
+                return render_template('login.html', 
+                                    span_class='invalid', 
+                                    message='Wrong username or password',
+                                    prev_username=username)
+            login_user(db_user)
+            response = make_response(redirect(url_for('social.home')))
+            response.set_cookie('username', username, max_age=60*60*24*365)
+            return response
+            
+        return render_template('login.html',
+                            span_class='invalid',
+                            message='Invalid username or password')
     else:
         try:
             if ('message' in session.keys() and 'span_class' in session.keys() and 

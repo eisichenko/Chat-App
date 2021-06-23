@@ -21,7 +21,7 @@ def send_message_event(json):
     
     message = Message(text=json['message'], 
                         user=current_user, 
-                        date=datetime.now(), 
+                        date=datetime.utcnow(), 
                         chat_id=chat_id, 
                         unread=True)
 

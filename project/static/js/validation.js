@@ -1,3 +1,19 @@
+function checkCookie()
+{
+    if (navigator.cookieEnabled) return true;
+
+    document.cookie = "cookietest=1";
+    var ret = document.cookie.indexOf("cookietest=") != -1;
+    document.cookie = "cookietest=1; max-age=0";
+    
+    return ret;
+}
+
+if (!checkCookie())
+{
+    alert("This website requires cookies to function properly");
+}
+
 function validate() {
     var username_field = document.getElementById("username")
     var password_field = document.getElementById("password")

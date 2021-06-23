@@ -51,7 +51,7 @@ def create_app(config_string):
     admin.add_view(MessageView(Message, db.session))
     
     socketio.init_app(app, cors_allowed_origins="*")
-        
+
     return app
 
 

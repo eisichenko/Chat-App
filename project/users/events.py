@@ -24,7 +24,7 @@ def connect():
     current_user.sid = request.sid
     db.session.commit()
     
-    socketio.emit('setup connection', { "username": current_user.username }, room=request.sid)
+    socketio.emit('setup connection', { }, room=request.sid)
 
 @socketio.on('disconnect')
 def disconnect():

@@ -3,6 +3,7 @@ from flask import render_template, request, redirect, url_for, session
 from flask_login import login_required, current_user
 from project import db, socketio
 import threading
+import datetime
 
 from . import social_blueprint
 
@@ -40,6 +41,8 @@ def home():
 @social_blueprint.route('/messages/chat/<int:id>')
 @login_required
 def chat(id):
+    print(request.cookies)
+    
     chat = Chat.query.get(id)
     
     if chat == None or chat not in current_user.chats:
@@ -47,7 +50,12 @@ def chat(id):
     
     session['current_chat_id'] = id
     
-    page = render_template('chat.html', messages=chat.messages, current_user=current_user)
+    hours_delta = datetime.timedelta(hours=int(request.cookies.get('timezoneOffset', 0)))
+    
+    page = render_template('chat.html', 
+                           messages=chat.messages, 
+                           current_user=current_user,
+                           hours_delta=hours_delta)
     
     try:
         if len(chat.messages) > 0 and chat.messages[-1].user_id != current_user.id:

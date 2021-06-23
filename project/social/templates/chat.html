@@ -32,7 +32,7 @@ Chat
                     </p>
                 </div>
                 <p class="user-msg-time">
-                    {{ message.date.strftime("%d/%m/%Y %H:%M:%S") }}
+                    {{ (message.date - hours_delta).strftime("%d/%m/%Y %H:%M:%S") }}
                 </p>
             {% else %}
                 <div class="col-6 container not-user-message">
@@ -49,7 +49,7 @@ Chat
                     </p>
                 </div>
                 <p class="not-user-msg-time">
-                    {{ message.date.strftime("%d/%m/%Y %H:%M:%S") }}
+                    {{ (message.date - hours_delta).strftime("%d/%m/%Y %H:%M:%S") }}
                 </p>
             {% endif %}
         {% endfor %}
