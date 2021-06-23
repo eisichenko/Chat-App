@@ -95,7 +95,7 @@ def test_read(flask_test_client):
     assert message.unread
     assert chat.unread_messages_number == 1
     
-    socketio_test_client.emit('read', json)
+    socketio_test_client.emit('mark as read', json)
     
     message = Message.query.get(1)
     chat = Chat.query.get(1)

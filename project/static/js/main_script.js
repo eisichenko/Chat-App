@@ -145,7 +145,8 @@ $(document).ready(function ()
 
         if (msg && msg.length > 0) 
         {
-            
+            $('#no-msg').remove()
+
             buildSenderMessage(msg, getCurrentTime())
 
             $('html, body').scrollTop( $('#chat').height() );
@@ -164,22 +165,20 @@ $(document).ready(function ()
 
         if (href.endsWith('/messages'))
         {
-            console.log('messages')
-
             $('#unread_msg_chat' + json.chat_id).remove();
 
             $('#chat' + json.chat_id).append('<p id="unread_msg_chat' + json.chat_id +  '" class="unread-msg ms-3">' + json.current_unread + ' unread</p>')
         }
         else if (href.endsWith('/messages/chat/' + json.chat_id))
         {
-            if (json.username == localStorage['currentUsername']) 
+            if (json.username == getCookie('username')) 
             {
                 buildSenderMessage(json.message, json.time)
             }
             else 
             {
                 buildOtherUserMessage(json.message, json.time, json.username)
-                socket.emit('read', json)
+                socket.emit('mark as read', json)
             }
         }
         else

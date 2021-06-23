@@ -34,18 +34,15 @@ def login():
                             span_class='invalid',
                             message='Invalid username or password')
     else:
-        try:
-            if ('message' in session.keys() and 'span_class' in session.keys() and 
-                len(session['message']) > 0 and len(session['span_class']) > 0):
-                
-                message = session.pop('message', '')
-                span_class = session.pop('span_class', '')
-                
-                return render_template('login.html', 
-                    span_class=span_class, 
-                    message=message)
-        except:
-            pass
+        if ('message' in session.keys() and 'span_class' in session.keys() and 
+            len(session['message']) > 0 and len(session['span_class']) > 0):
+            
+            message = session.pop('message', '')
+            span_class = session.pop('span_class', '')
+            
+            return render_template('login.html', 
+                span_class=span_class, 
+                message=message)
 
         return render_template('login.html')
 
@@ -53,36 +50,33 @@ def login():
 @users_blueprint.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        try:
-            username = request.form['username']
-            password = request.form['password']
+        username = request.form['username']
+        password = request.form['password']
+        
+        valid_username = not username is None and len(username) > 2 and len(username) < 16
+        valid_password = not password is None and len(password) > 2 and len(username) < 81
+        
+        if valid_username and valid_password:
+            new_user = User(username=username, 
+                            password=password)
             
-            valid_username = not username is None and len(username) > 2 and len(username) < 16
-            valid_password = not password is None and len(password) > 2 and len(username) < 81
+            existing_user = User.query.filter_by(username=username).first()
             
-            if valid_username and valid_password:
-                new_user = User(username=username, 
-                                password=password)
+            if existing_user:
+                return render_template('signup.html', 
+                                    span_class='invalid', 
+                                    message='Username already exists',
+                                    prev_username=username)
                 
-                existing_user = User.query.filter_by(username=username).first()
-                
-                if existing_user:
-                    return render_template('signup.html', 
-                                        span_class='invalid', 
-                                        message='Username already exists',
-                                        prev_username=username)
-                    
-                db.session.add(new_user)
-                db.session.commit()
-                session['message'] = "You've registered account successfully"
-                session['span_class'] = 'valid'
-                return redirect(url_for('users.login'))
-                
-            return render_template('signup.html',
-                                span_class='invalid',
-                                message='Invalid username or password')
-        except:
-            pass
+            db.session.add(new_user)
+            db.session.commit()
+            session['message'] = "You've registered account successfully"
+            session['span_class'] = 'valid'
+            return redirect(url_for('users.login'))
+            
+        return render_template('signup.html',
+                            span_class='invalid',
+                            message='Invalid username or password')
         
     return render_template('signup.html')
 
@@ -102,42 +96,39 @@ def my_profile():
     if request.method == 'GET':
         return render_template('my_profile.html', user=user)
     else:
-        try:
-            username = request.form['username']
-            valid_username = not username is None and len(username) > 2 and len(username) < 16
+        username = request.form['username']
+        valid_username = not username is None and len(username) > 2 and len(username) < 16
+        
+        existing_username = User.query.filter_by(username=username).first()
+        
+        if existing_username:
+            return render_template('my_profile.html', 
+                                span_class='invalid', 
+                                message='Username already exists',
+                                user=user)
+        
+        if valid_username:
+            user.username = username
+            db.session.commit()
             
-            existing_username = User.query.filter_by(username=username).first()
+            response = make_response(redirect(url_for('users.my_profile')))
+            response.set_cookie('username', username, max_age=60*60*24*365)
             
-            if existing_username:
-                return render_template('my_profile.html', 
-                                    span_class='invalid', 
-                                    message='Username already exists',
-                                    user=user)
-            
-            if valid_username:
-                user.username = username
-                db.session.commit()
-                socketio.emit('setup connection', { "username": current_user.username }, room=request.sid)
-                return redirect(url_for('users.my_profile'))
-                        
-            return render_template('my_profile.html',
-                            span_class='invalid',
-                            message='Invalid username',
-                            user=user)
-        except:
-            return redirect('/my-profile')
+            return response
+                    
+        return render_template('my_profile.html',
+                        span_class='invalid',
+                        message='Invalid username',
+                        user=user)
 
 
 @users_blueprint.route('/delete')
 @login_required
 def delete():
-    try:
-        user = User.query.get(current_user.id)
-        
-        logout_user()
-        
-        db.session.delete(user)
-        db.session.commit()
-        return redirect(url_for('users.login'))
-    except:
-        return redirect('/my-profile')
+    user = User.query.get(current_user.id)
+    
+    logout_user()
+    
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('users.login'))
