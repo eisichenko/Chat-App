@@ -1,3 +1,4 @@
+from eventlet.wsgi import socket_repr
 from project import socketio
 from flask import session
 from flask_login import current_user

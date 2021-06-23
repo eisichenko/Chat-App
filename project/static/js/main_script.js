@@ -177,8 +177,8 @@ $(document).ready(function ()
             }
             else 
             {
-                buildOtherUserMessage(json.message, json.time, json.username)
                 socket.emit('mark as read', json)
+                buildOtherUserMessage(json.message, json.time, json.username)
             }
         }
         else
