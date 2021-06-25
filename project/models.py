@@ -3,6 +3,7 @@ from flask_login import UserMixin
 from datetime import datetime
 from sqlalchemy import event
 from werkzeug.security import generate_password_hash
+from sqlalchemy.dialects.mysql import DATETIME
 
 args = { 'mysql_collate': 'utf8mb4_bin', 'mysql_charset': 'utf8mb4' }
 
@@ -25,6 +26,15 @@ friends_table = db.Table('friends',
     mysql_charset = charset
 )
 
+class Timestamp(db.Model):
+    __table_args__ = args
+    user_id = db.Column(db.BigInteger, db.ForeignKey('user.id'), nullable=False, primary_key=True)
+    chat_id = db.Column(db.BigInteger, db.ForeignKey('chat.id'), nullable=False, primary_key=True)
+    timestamp = db.Column(DATETIME(fsp=6))
+    
+    def __repr__(self):
+        return f'<Timestamp(user_id = "{self.user_id}" chat_id = "{self.chat_id}")>'
+
 
 class User(UserMixin, db.Model):
     __table_args__ = args
@@ -40,6 +50,7 @@ class User(UserMixin, db.Model):
                               primaryjoin = (friends_table.c.user_id == id),
                               secondaryjoin = (friends_table.c.friend_id == id),
                               lazy=True)
+    timestamps = db.relationship('Timestamp', backref='user', lazy=True)
     
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     
@@ -58,8 +69,7 @@ class Message(db.Model):
     text = db.Column(db.PickleType, nullable=False)
     user_id = db.Column(db.BigInteger, db.ForeignKey('user.id'), nullable=False)
     chat_id = db.Column(db.BigInteger, db.ForeignKey('chat.id'), nullable=False)
-    unread = db.Column(db.Boolean, nullable=False)
-    date = db.Column(db.DateTime, default=datetime.now())
+    date = db.Column(DATETIME(fsp=6), default=datetime.utcnow())
     
     def __repr__(self):
         return f'<Message(id = "{self.id}")>'
@@ -68,5 +78,5 @@ class Message(db.Model):
 class Chat(db.Model):
     __table_args__ = args
     id = db.Column(db.BigInteger, primary_key=True)
-    unread_messages_number = db.Column(db.BigInteger, default=0, nullable=False)
-    messages = db.relationship('Message', backref='chat', lazy=True)
+    messages = db.relationship('Message', order_by='Message.date', backref='chat', lazy=True)
+    timestamps = db.relationship('Timestamp', backref='chat', lazy=True)

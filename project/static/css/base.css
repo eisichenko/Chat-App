@@ -105,6 +105,16 @@ p.not-user-msg-time {
     font-size: 10px !important;
 }
 
+p.not-user-new-msg {
+    position: relative !important;
+    margin-top: 0.1rem !important;
+    margin-left: 0 !important;
+    text-align: start !important;
+    color: #ff0000 !important;
+    font-size: 10px !important;
+    text-decoration: solid !important;
+}
+
 p.user-msg-time {
     position: relative !important;
     margin-top: 0.1rem !important;
@@ -191,7 +201,7 @@ a.profile-link:hover {
     font-size: x-large;
 }
 
-p.unread-msg {
+p.unread-msg, span.unread-msg {
     display: inline;
     color: red !important;
     font-style: italic;

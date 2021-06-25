@@ -37,14 +37,26 @@ function twoDigitInteger(num)
     return (num < 10) ? "0" + num : num;
 }
 
-function getCurrentTime() 
+function getCurrentTime(date_string, offset) 
 {
-    var d = new Date();
+    if (date_string == undefined)
+    {
+        var d = new Date();
+    }
+    else
+    {
+        var d = new Date(date_string);
+    }
     
     year = d.getFullYear()
-    month = twoDigitInteger(d.getMonth())
+    month = twoDigitInteger(d.getMonth() + 1)
     date = twoDigitInteger(d.getDate())
-    hours = twoDigitInteger(d.getHours())
+
+    if (offset != undefined)
+        var hours = twoDigitInteger(d.getHours() - Number.parseInt(offset))
+    else
+        var hours = twoDigitInteger(d.getHours())
+
     minutes = twoDigitInteger(d.getMinutes())
     seconds = twoDigitInteger(d.getSeconds())
 
@@ -86,7 +98,7 @@ function buildOtherUserMessage(msg, time, username)
 
     var name_tag = $('<p class="pe-2 sender-name"></p>')
 
-    name_tag.append(document.createTextNode(username + ':'))
+    name_tag.append(document.createTextNode(username + ': '))
 
     var msg_tag = $('<p style="display: inline;"></p>')
 
@@ -165,20 +177,27 @@ $(document).ready(function ()
 
         if (href.endsWith('/messages'))
         {
-            $('#unread_msg_chat' + json.chat_id).remove();
-
-            $('#chat' + json.chat_id).append('<p id="unread_msg_chat' + json.chat_id +  '" class="unread-msg ms-3">' + json.current_unread + ' unread</p>')
+            unread_number_tag_id = '#unread_msg_chat' + json.chat_id
+            
+            if ($(unread_number_tag_id).length == 0)
+            {
+                $('#chat' + json.chat_id).append('<p class="unread-msg ms-0"> <span id="unread_msg_chat' + json.chat_id +  '" class="unread-msg ms-3 me-0">1</span> unread</p>')
+            }
+            else
+            {
+                $(unread_number_tag_id).text(Number.parseInt($(unread_number_tag_id).html()) + 1)
+            }
         }
         else if (href.endsWith('/messages/chat/' + json.chat_id))
         {
-            if (json.username == getCookie('username')) 
+            if (json.sender_username == getCookie('username')) 
             {
-                buildSenderMessage(json.message, json.time)
+                buildSenderMessage(json.message, getCurrentTime(json.time, getCookie('timezoneOffset')))
             }
-            else 
+            else
             {
-                socket.emit('mark as read', json)
-                buildOtherUserMessage(json.message, json.time, json.username)
+                socket.emit('mark as read', { 'chat_id': json.chat_id, 'sender_username': json.sender_username })
+                buildOtherUserMessage(json.message, getCurrentTime(json.time, getCookie('timezoneOffset')), json.sender_username)
             }
         }
         else
@@ -205,9 +224,14 @@ $(document).ready(function ()
     $('#message_text_area').keypress(function(event)
     {
         var keycode = (event.keyCode ? event.keyCode : event.which);
-        if(keycode == '13') 
+
+        text_length = $("#message_text_area").val().length
+
+        if (keycode == '13' && 
+            text_length >= 0 && text_length <= 1000) 
         {
             event.preventDefault()
+            limit_verdict.innerHTML = "<br>"
             $('#message_form').trigger('submit')
         }
     });
@@ -215,13 +239,19 @@ $(document).ready(function ()
     $('#message_text_area').keyup(function(event)
     {
         var keycode = (event.keyCode ? event.keyCode : event.which);
+
+        text_length = $("#message_text_area").val().length
         
-        if ($("#message_text_area").val().length >= 1000 && keycode != '8' && keycode != '46') 
+        if (text_length >= 1000 && keycode != '8' && keycode != '46') 
         {
-            event.preventDefault()
+            if (text_length > 1000)
+            {
+                event.preventDefault()
+            }
+
             limit_verdict.innerHTML = "Limit 1000 characters"
         }
-        else if ($("#message_text_area").val().length >= 0 && $("#message_text_area").val().length < 1000)
+        else if (text_length >= 0 && text_length < 1000)
         {
             limit_verdict.innerHTML = "<br>"
         }

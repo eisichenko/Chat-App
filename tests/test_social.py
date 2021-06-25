@@ -160,49 +160,58 @@ def test_messages(flask_test_client):
     logout(flask_test_client)
 
 
-def test_chat(flask_test_client):
+def test_chat():
     current_username = user_data[0][0]
     current_password = user_data[0][1]
     
-    current_user = User.query.filter_by(username=current_username).first()
-    other_user = User.query.get(2)
+    other_username = user_data[1][0]
+    other_password = user_data[1][1]
     
-    login(flask_test_client, current_username, current_password)
-    
-    response = flask_test_client.get('/messages/chat/123123')
-    assert response.status_code == 302
-    
-    chat = current_user.chats[0]
-    
-    response = flask_test_client.get('/messages/chat/' + str(chat.id))
-    assert response.status_code == 200
-    
-    other_user_msg = Message(text='some message', 
-                                 user=other_user, 
-                                 date=datetime.now(), 
-                                 chat_id=chat.id, 
-                                 unread=True)
-    
-    chat.messages.append(other_user_msg)
-    chat.unread_messages_number = 1
-    db.session.commit()
-    
-    response = flask_test_client.get('/messages/chat/' + str(chat.id))
-    assert not other_user_msg.unread
-    assert response.status_code == 200
-    assert b'Unread Messages' in response.data
-    
-    current_user_msg = Message(text='some user message', 
-                                 user=current_user, 
-                                 date=datetime.now(), 
-                                 chat_id=chat.id, 
-                                 unread=True)
-    
-    chat.messages.append(current_user_msg)
-    chat.unread_messages_number = 1
-    db.session.commit()
-    response = flask_test_client.get('/messages/chat/' + str(chat.id))
-    assert response.status_code == 200
-    assert not b'Unread Messages' in response.data
-    
-    logout(flask_test_client)
+    with test_app.app_context():
+        
+        flask_test_client1 = test_app.test_client()
+        flask_test_client2 = test_app.test_client()
+        
+        current_user = User.query.get(1)
+        other_user = User.query.get(2)
+        
+        login(flask_test_client1, current_username, current_password)
+        login(flask_test_client2, other_username, other_password)
+        
+        response = flask_test_client1.get('/messages/chat/123123')
+        assert response.status_code == 302
+        
+        chat = current_user.chats[0]
+        
+        assert len(chat.messages) == 0
+        assert len(current_user.chats[0].messages) == 0
+        assert len(other_user.chats[0].messages) == 0
+        
+        other_user_msg = Message(text='some message', 
+                                     user=other_user, 
+                                     date=datetime.now(), 
+                                     chat_id=chat.id)
+        
+        chat.messages.append(other_user_msg)
+        
+        db.session.commit()
+        
+        assert len(chat.messages) == 1
+        assert len(current_user.chats[0].messages) == 1
+        assert len(other_user.chats[0].messages) == 1
+        
+        user_msg = Message(text='qweqweqwe message', 
+                                     user=current_user, 
+                                     date=datetime.now(), 
+                                     chat_id=chat.id)
+        
+        chat.messages.append(user_msg)
+        
+        db.session.commit()
+        
+        assert len(chat.messages) == 2
+        assert len(current_user.chats[0].messages) == 2
+        assert len(other_user.chats[0].messages) == 2
+        
+        logout(flask_test_client1)
+        logout(flask_test_client2)

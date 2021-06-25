@@ -23,11 +23,16 @@ class UserView(ModelView):
 
 
 class ChatView(ModelView):
-    column_list = ['id', 'unread_messages_number']
-
+    column_list = ['id']
+    
 
 class MessageView(ModelView):
-    column_list = ['id', 'text', 'unread', 'date', 'user', 'chat']
+    column_list = ['id', 'text', 'date', 'user', 'chat']
+    
+
+class TimestampView(ModelView):
+    column_list = ['user', 'chat', 'timestamp']
+
     
 
 class HomeAdminView(AdminIndexView):
@@ -49,6 +54,7 @@ def create_app(config_string):
     admin.add_view(UserView(User, db.session))
     admin.add_view(ChatView(Chat, db.session))
     admin.add_view(MessageView(Message, db.session))
+    admin.add_view(TimestampView(Timestamp, db.session))
     
     socketio.init_app(app, cors_allowed_origins="*")
 

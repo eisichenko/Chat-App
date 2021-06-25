@@ -9,8 +9,11 @@ Messages
 <br>
 
 <div class="container ms-5">
-{% if chats|length > 0 %}
-    {% for chat in chats %}
+{% if chats_with_unread_messages|length > 0 %}
+    {% for item in chats_with_unread_messages %}
+        {% set chat = item[0] %}
+        {% set unread_messages_number = item[1] %}
+
         <div id="chat{{ chat.id }}" class="mb-4">
             {% if chat.users[0].id == current_user.id %}
                 {% if chat.users[1].sid != None %}
@@ -31,8 +34,8 @@ Messages
                 
             {% endif %}
 
-            {% if chat.unread_messages_number > 0 and chat.messages[-1].user_id != current_user.id %}
-                <p id="unread_msg_chat{{ chat.id }}" class="unread-msg ms-3">{{ chat.unread_messages_number }} unread</p>
+            {% if unread_messages_number > 0 %}
+                <p class="unread-msg ms-0"> <span id="unread_msg_chat{{ chat.id }}" class="unread-msg ms-3 me-0">{{ unread_messages_number }}</span> unread</p>
             {% endif %}
         </div>
         
