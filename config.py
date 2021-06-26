@@ -1,9 +1,9 @@
 import os
 import random
 import string
-import threading
+import eventlet.semaphore
 
-db_semaphore = threading.Semaphore(3)
+db_semaphore = eventlet.semaphore.Semaphore(3)
 
 
 def random_string(n=random.randint(100, 150)):
