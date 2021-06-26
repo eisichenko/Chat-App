@@ -1,6 +1,9 @@
 import os
 import random
 import string
+import threading
+
+db_semaphore = threading.Semaphore(3)
 
 
 def random_string(n=random.randint(100, 150)):
