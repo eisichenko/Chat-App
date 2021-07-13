@@ -2,7 +2,7 @@ from project.models import User
 from flask import render_template, request, redirect, url_for, session, make_response
 from werkzeug.security import check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-from project import db, socketio
+from project import db
 
 from . import users_blueprint
 

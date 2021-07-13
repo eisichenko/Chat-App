@@ -1,4 +1,4 @@
-from flask import Flask, abort, g
+from flask import Flask, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.pool import QueuePool
 from flask_socketio import SocketIO

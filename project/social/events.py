@@ -2,7 +2,6 @@ from project import socketio
 from flask import session, request
 from flask_login import current_user
 from project.models import *
-import time
 import config
 from contextlib import nullcontext
 
@@ -12,15 +11,12 @@ if config.needs_redis():
 
 
 def write_message_task(json, chat_id, user_id, sid):
-    begin = time.time()
-    
     if config.needs_redis():
         app_context = app.app.app_context()
     else:
         app_context = nullcontext()
         
     with app_context:
-        
         user = User.query.get(user_id)
         username = user.username
         
@@ -53,9 +49,7 @@ def write_message_task(json, chat_id, user_id, sid):
                 request.sid = sid
                 socketio.emit('update messages', json, room=str(chat_id), include_self=False)
         else:
-            socketio.emit('update messages', json, room=str(chat_id), include_self=False) 
-    
-    print(f'WRITING MESSAGE TOOK: {time.time() - begin} seconds')
+            socketio.emit('update messages', json, room=str(chat_id), include_self=False)
 
 
 @socketio.on('send message')
@@ -77,8 +71,6 @@ def send_message_event(json):
 
 
 def mark_as_read_task(json, user_id):
-    start = time.time()
-    
     if config.needs_redis():
         app_context = app.app.app_context()
     else:
@@ -92,8 +84,6 @@ def mark_as_read_task(json, user_id):
             timestamp.timestamp = datetime.utcnow()
 
         db.session.commit()
-    
-    print(f'READ TOOK : {time.time() - start} seconds')
 
 @socketio.on('mark as read')
 def read(json):
