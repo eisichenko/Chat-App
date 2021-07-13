@@ -1,5 +1,7 @@
 # Chat App
 
+[![codecov](https://codecov.io/gh/eisichenko/ChatApp/branch/production/graph/badge.svg?token=Z6ZDF5AHCW)](https://codecov.io/gh/eisichenko/ChatApp)
+
 - `docker-compose up` - start app on localhost (url:  http://127.0.0.1:5000)
 
 - `docker-compose down -v` - remove containers with **deleting** DB data
