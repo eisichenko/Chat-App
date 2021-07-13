@@ -40,7 +40,7 @@ class User(UserMixin, db.Model):
     __table_args__ = args
     id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.Unicode(15), nullable=False, unique=True)
-    password = db.Column(db.Unicode(80), nullable=False)
+    password = db.Column(db.Unicode(100), nullable=False)
     sid = db.Column(db.Unicode(50), nullable=True)
     
     messages = db.relationship('Message', backref='user', lazy=True)

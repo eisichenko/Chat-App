@@ -17,13 +17,24 @@ services:
         image: eisichenko/chat_app_flask:latest
         container_name: flask
         restart: always
-        command: gunicorn --worker-class eventlet -w 1 -b :8000 --log-level debug "app:app"
+        command: gunicorn --worker-class eventlet -w 1 --bind ":8000" --log-level debug app:app
         environment: 
             - ENV=docker-compose
-        depends_on: 
+        links: 
+            - redis
             - db
         ports:
             - 5000:8000
+    redis:
+        image: redis
+    rq:
+        image: eisichenko/chat_app_flask:latest
+        command: python3 run-worker.py
+        environment: 
+            - ENV=rq
+        links: 
+            - redis
+            - flask
 
 volumes: 
     db_data: {}

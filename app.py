@@ -1,14 +1,19 @@
-from project import db, create_app, socketio
+from project import db, create_app, socketio, admin
 from project.models import *
 import time
 import config
+
+if config.needs_redis():
+    import eventlet
+    print('Monkey patching')
+    eventlet.monkey_patch()
 
 app = create_app(config.get_config_string())
 
 if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and not config.RECREATION_OF_DATABASE:
     with app.app_context():
-        print('Waiting for db...', flush=True)
-
+        print('Waiting for db...')
+        
         while True:
             try:
                 db.create_all()
@@ -17,7 +22,7 @@ if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and not config.REC
                 print(e, flush=True)
                 time.sleep(1)
 
-        print('Connection established!', flush=True)
+        print('Connection established!')
 
         users = User.query.all()
 
@@ -27,8 +32,8 @@ if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and not config.REC
         admin = User.query.filter_by(is_admin=True).first()
         
         if admin == None:
-            print('No admin user was found! Creating default admin...', flush=True)
-            print('You can change data later', flush=True)
+            print('No admin user was found! Creating default admin...')
+            print('You can change data later')
             username = 'admin'
             password = '123'
             admin = User(username=username, 
@@ -39,12 +44,11 @@ if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and not config.REC
 
             db.session.commit()
             
-            print('\nCreated default admin user:', flush=True)
-            print(f'USERNAME: {username}', flush=True)
-            print(f'PASSWORD: {password}', flush=True)
+            print('\nCreated default admin user:')
+            print(f'USERNAME: {username}')
+            print(f'PASSWORD: {password}')
 
-
-    print('Server started!', flush=True)
+    print('Server started!')
 
     if config.ENV == config.LOCAL_ENV:
-        socketio.run(app, debug=True, use_reloader=False)
+        socketio.run(app, use_reloader=False)

@@ -1,4 +1,4 @@
-from flask import Flask, abort
+from flask import Flask, abort, g
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.pool import QueuePool
 from flask_socketio import SocketIO
@@ -6,6 +6,9 @@ from flask_login import LoginManager, login_manager, current_user
 from werkzeug import debug
 from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
+import redis
+import rq
+import config
 
 
 db = SQLAlchemy(engine_options={"pool_size": 10, "poolclass":QueuePool, "pool_pre_ping":True})
@@ -13,10 +16,18 @@ db = SQLAlchemy(engine_options={"pool_size": 10, "poolclass":QueuePool, "pool_pr
 from project.models import *
 
 login_manager = LoginManager()
+
 socketio = SocketIO()
+
 login_manager.login_view = "users.login"
 
 admin = Admin()
+
+if config.needs_redis():
+    redis_connection = redis.from_url(config.REDIS_URL)
+    high_queue = rq.Queue(name='high', connection=redis_connection)
+    default_queue = rq.Queue(name='default', connection=redis_connection)
+    low_queue = rq.Queue(name='low', connection=redis_connection)
 
 class UserView(ModelView):
     column_list = ['id', 'username', 'password', 'sid', 'is_admin']
@@ -56,8 +67,11 @@ def create_app(config_string):
     admin.add_view(MessageView(Message, db.session))
     admin.add_view(TimestampView(Timestamp, db.session))
     
-    socketio.init_app(app, cors_allowed_origins="*")
-
+    if config.needs_redis():
+        socketio.init_app(app, cors_allowed_origins="*", message_queue=config.REDIS_URL)
+    else:
+        socketio.init_app(app, cors_allowed_origins="*")
+    
     return app
 
 

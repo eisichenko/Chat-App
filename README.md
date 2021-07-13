@@ -10,6 +10,8 @@
 
 - Used `Github Actions` for development with ci/cd
 
-- dockerhub: https://hub.docker.com/repository/docker/eisichenko/chat_app_flask
+- Added `redis task queue` to scheduling jobs
 
-- Deployed on Heroku: https://still-coast-06295.herokuapp.com/
+- Dockerhub: https://hub.docker.com/repository/docker/eisichenko/chat_app_flask
+
+- App is deployable on Heroku

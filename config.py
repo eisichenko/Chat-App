@@ -1,9 +1,6 @@
 import os
 import random
 import string
-import eventlet.semaphore
-
-db_semaphore = eventlet.semaphore.Semaphore(3)
 
 
 def random_string(n=random.randint(100, 150)):
@@ -14,7 +11,7 @@ def random_string(n=random.randint(100, 150)):
 def get_config_string():
     if ENV == HEROKU_ENV:
         return 'config.ProductionConfig'
-    elif ENV == LOCAL_ENV or ENV == DOCKER_ENV:
+    elif ENV == LOCAL_ENV or ENV == DOCKER_ENV or ENV == RQ_ENV:
         return 'config.DevelopmentConfig'
     raise ValueError('No configuration')
 
@@ -23,11 +20,23 @@ LOCAL_ENV = 'local'
 HEROKU_ENV = 'heroku'
 GITHUB_ENV = 'github-actions'
 DOCKER_ENV = 'docker-compose'
+RQ_ENV = 'rq'
 
 ENV = os.environ.get('ENV', LOCAL_ENV)
 
 RECREATION_OF_DATABASE = False
 
+if ENV == LOCAL_ENV:
+    REDIS_URL = None
+elif ENV == DOCKER_ENV or ENV == RQ_ENV:
+    REDIS_URL = 'redis://redis:6379'
+elif ENV == HEROKU_ENV:
+    REDIS_URL = os.environ.get('REDISTOGO_URL', None)
+    if REDIS_URL == None:
+        raise Exception('No redis url')
+    
+def needs_redis():
+    return ENV != LOCAL_ENV and ENV != GITHUB_ENV
 
 class Config(object):
     DEBUG = False
@@ -52,7 +61,7 @@ class DevelopmentConfig(Config):
     
     if ENV == LOCAL_ENV:
         SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123@localhost/flask_app'
-    elif ENV == DOCKER_ENV:
+    elif ENV == DOCKER_ENV or ENV == RQ_ENV:
         SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:pass@db/flask_app'    
 
 

@@ -3,7 +3,6 @@ from flask import request
 from flask_login import current_user
 from flask_socketio import join_room
 from project.models import *
-import config
 
 
 @socketio.on('join')
@@ -14,24 +13,22 @@ def join(json):
 
 @socketio.on('connect')
 def connect():
-    with config.db_semaphore:
-        if current_user.is_anonymous:
-            return False
-            
-        print(f'connected: {current_user.username}')
+    if current_user.is_anonymous:
+        return False
         
-        for chat in current_user.chats:
-            join_room(str(chat.id))
-            
-        current_user.sid = request.sid
-        db.session.commit()
+    print(f'connected: {current_user.username}')
+    
+    for chat in current_user.chats:
+        join_room(str(chat.id))
         
-        socketio.emit('setup connection', { }, room=request.sid)
+    current_user.sid = request.sid
+    db.session.commit()
+    
+    socketio.emit('setup connection', { }, room=request.sid)
 
 @socketio.on('disconnect')
 def disconnect():
-    with config.db_semaphore:
-        print(f'disconnected: {current_user.username}')
-        
-        current_user.sid = None
-        db.session.commit()
+    print(f'disconnected: {current_user.username}')
+    
+    current_user.sid = None
+    db.session.commit()
