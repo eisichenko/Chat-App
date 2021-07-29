@@ -14,15 +14,17 @@ if (!checkCookie())
     alert("This website requires cookies to function properly");
 }
 
-function validate() {
-    var username_field = document.getElementById("username")
-    var password_field = document.getElementById("password")
+var username_field = document.getElementById("username")
+var password_field = document.getElementById("password")
 
-    var username_verdict = document.getElementById("username_verdict")
-    var password_verdict = document.getElementById("password_verdict")
+var username_verdict = document.getElementById("username_verdict")
+var password_verdict = document.getElementById("password_verdict")
+
+function validate() {
 
     if (!username_field)
     {
+        username_verdict.style.visibility = 'hidden'
         return false
     }
 
@@ -42,11 +44,11 @@ function validate() {
 
             if (username.length < 3)
             {
-                username_verdict.innerHTML = 'Length less than 3'
+                username_verdict.innerHTML = 'Length is less than 3'
             }
             else
             {
-                username_verdict.innerHTML = 'Length more than 15'
+                username_verdict.innerHTML = 'Length is more than 15'
             }
 
             var res_username = false
@@ -60,10 +62,12 @@ function validate() {
 
             var res_username = true
         }
+
+        username_verdict.style.visibility = 'visible'
     }
     else
     {
-        username_verdict.innerHTML = ''
+        username_verdict.style.visibility = 'hidden'
 
         var res_username = false
     }
@@ -79,11 +83,11 @@ function validate() {
 
             if (password.length < 3)
             {
-                password_verdict.innerHTML = 'Length less than 3'
+                password_verdict.innerHTML = 'Length is less than 3'
             }
             else
             {
-                password_verdict.innerHTML = 'Length more than 80'
+                password_verdict.innerHTML = 'Length is more than 80'
             }
 
             var res_password = false
@@ -93,14 +97,17 @@ function validate() {
             password_verdict.classList.add('valid')
             password_verdict.classList.remove('invalid')
 
+            
             password_verdict.innerHTML = 'OK'
 
             var res_password = true
         }
+
+        password_verdict.style.visibility = 'visible'
     }
     else
     {
-        password_verdict.innerHTML = ''
+        password_verdict.style.visibility = 'hidden'
 
         var res_password = false
     }

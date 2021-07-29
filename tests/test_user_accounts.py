@@ -8,7 +8,7 @@ def test_existing_user_login(flask_test_client, socketio_test_client, username, 
     response = flask_test_client.get('/login')
     
     assert response.status_code == 200, 'wrong status code'
-    assert b'Log in' in response.data, 'wrong page'
+    assert b'LOGIN' in response.data, 'wrong page'
     
     print('aahahah')
     
@@ -25,7 +25,7 @@ def test_not_existing_user_login(flask_test_client, socketio_test_client, userna
                                                      'password': password})
     
     assert response.status_code == 200, 'wrong status code'
-    assert b'Log in' in response.data, 'wrong page'
+    assert b'LOGIN' in response.data, 'wrong page'
     
 
 @pytest.mark.parametrize('username, password', invalid_user_data)
@@ -155,5 +155,5 @@ def test_deleting_users(flask_test_client, username, password):
     response = flask_test_client.get('/delete', follow_redirects=True)
     
     assert response.status_code == 200
-    assert b'Log in' in response.data
+    assert b'LOGIN' in response.data
     assert User.query.filter_by(username=username).first() == None, "not deleted"

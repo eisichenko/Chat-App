@@ -39,6 +39,8 @@ div.user-message {
     border-color: #ffd900 !important;
     background-color: rgb(100, 99, 99) !important;
     margin-right: 0 !important;
+    -ms-word-wrap: break-word !important;
+    word-wrap: break-word !important;
     overflow-wrap: break-word !important;
 }
 
