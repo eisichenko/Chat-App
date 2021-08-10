@@ -4,6 +4,7 @@ from flask_login import current_user
 from project.models import *
 import config
 from contextlib import nullcontext
+from sqlalchemy import func
 
 if config.needs_redis():
     from project import high_queue, default_queue
@@ -92,3 +93,31 @@ def read(json):
             high_queue.enqueue(mark_as_read_task, json, current_user.id)
         else:
             mark_as_read_task(json, current_user.id)
+            
+
+def get_list_of_users_task(name):
+    if config.needs_redis():
+        app_context = app.app.app_context()
+    else:
+        app_context = nullcontext()
+        
+    with app_context:
+        if len(name) == 0:
+            users = User.query.limit(10).all()
+        else:
+            users = User.query.filter(func.lower(User.username).startswith(func.lower(name)))
+        if config.needs_redis():
+            with app.app.test_request_context():
+                socketio.emit('update list of users', { 'users': [user.username for user in users] })
+        else:
+            socketio.emit('update list of users', { 'users': [user.username for user in users] })
+    
+            
+
+@socketio.on('get list of users')
+def get_list_of_users(json):
+    name = json['name']
+    if config.needs_redis():
+        high_queue.enqueue(get_list_of_users_task, name)
+    else:
+        get_list_of_users_task(name)

@@ -5,53 +5,44 @@ Home page
 {% endblock %}
 
 {% block body %}
-<div class="text-center"><h2>Welcome, {{ username }}!</h2></div>
-
-{% if message|length > 0 %}
-<br>
-<div class="text-center">
-    <h3>
-        <span class="{{ span_class }}">{{ message }}</span>
-    </h3>
-</div>
-{% endif %}
-
-
-<form class="col-auto mb-5 me-auto ms-auto w-50 text-center mt-3" method="POST">
-    <input maxlength="15" type="search" class="form-control mb-3" name="search_field" autocomplete="off" placeholder="Search users by username...">
-    <input class="btn btn-send" type="submit" value="Find">
-</form>
-
-<br>
-
-{% if found_username|length > 0 %}
-
-<h4>Found user:</h4>
-<br>
-
-<div class="not-user-message col-5">
-    <div class="m-2">
-        {% if is_online %}
-            <h5 class="online">Online</h5>
-        {% else %}
-            <h5 class="offline">Offline</h5>
-        {% endif %}
-
-        <h4>Username: {{ found_username }}</h4>
-        <h4>User ID: {{ found_id }}</h4>
-    </div>
+<div class="greet">
+    <p>Welcome, {{ username }}!</p>
 </div>
 
-<br>
+<div class="search">
+    {% if message|length > 0 %}
+        <p class="{{ span_class }}">{{ message }}</p>
+    {% endif %}
+    <form autocomplete="off" method="POST">
+        <input maxlength="15" id="search_field" name="search_field" autocomplete="off" placeholder="Search users by username...">
+        <p id="find-verdict" class="invalid-find-name">Username was not found</p>
+        <div id="found-user-list" class="found-user-list"></div>
+        <button class="submit" id="find-button">Find</button>
+    </form>
 
-<a href="{{ url_for('social.start_chat', other_id=found_id) }}" class="btn btn-blue me-2" type="submit">Start Chat</a>
+    {% if found_username|length > 0 %}
 
-{% if is_friend %}
-    <a href="{{ url_for('social.add_friend', friend_id=found_id) }}" class="btn btn-success disabled" type="submit">Already friend</a>
-{% else %}
-    <a href="{{ url_for('social.add_friend', friend_id=found_id) }}" class="btn btn-success" type="submit">Add Friend</a>
-{% endif %}
-<br><br>
-{% endif %}
+        <div class="found-user">
+            <h2>Found user:</h2>
+
+            {% if is_online %}
+                <h3>Status: <span class="online">online</span></h3>
+            {% else %}
+                <h3>Status: <span class="offline">offline</span></h3>
+            {% endif %}
+
+            <h3 class="username">Username: {{ found_username }}</h3>
+
+            <a href="{{ url_for('social.start_chat', other_id=found_id) }}" class="start-chat">Start Chat</a>
+
+            {% if is_friend %}
+                <p class="already-friend">Already friend</p>
+            {% else %}
+                <a href="{{ url_for('social.add_friend', friend_id=found_id) }}" class="add-friend">Add Friend</a>
+            {% endif %}
+        </div>
+
+    {% endif %}
+</div>
 
 {% endblock %}

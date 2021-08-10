@@ -137,7 +137,7 @@ def add_friend(friend_id):
     
     db.session.commit()
     
-    return render_template('friends.html', current_user=current_user)
+    return redirect(url_for('social.friends'))
 
 
 @social_blueprint.route('/remove-friend/<int:friend_id>')
@@ -156,4 +156,4 @@ def remove_friend(friend_id):
     
     db.session.commit()
     
-    return render_template('friends.html', current_user=current_user)
+    return redirect(url_for('social.friends'))

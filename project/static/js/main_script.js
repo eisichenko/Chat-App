@@ -68,22 +68,21 @@ function buildSenderMessage(msg, time)
 {
     $('#message_text_area').val('').focus()
 
-    var message_box = $('<div class="col-6 container user-message"></div>');
+    var message_box = $('<div class="self-message"></div>');
 
-    var name_tag = $('<p class="pe-2 sender-name"></p>')
+    var text_tag = $('<p class="self-text"></p>')
 
-    name_tag.append(document.createTextNode(getCookie('username') + ': '))
+    var span_tag = $('<span class="self-name"></span>')
 
-    var msg_tag = $('<p style="display: inline;"></p>')
+    span_tag.append(document.createTextNode(getCookie('username') + ': '))
 
-    msg_tag.append(document.createTextNode(msg))
-
-    message_box.append(name_tag)
-    message_box.append(msg_tag)
+    text_tag.append(span_tag)
+    text_tag.append(document.createTextNode(msg))
+    message_box.append(text_tag)
 
     $('#chat').append(message_box)
 
-    var time_tag = $('<p class="user-msg-time"></p>')
+    var time_tag = $('<p class="self-msg-time"></p>')
 
     time_tag.append(document.createTextNode(time))
 
@@ -92,25 +91,25 @@ function buildSenderMessage(msg, time)
 
 function buildOtherUserMessage(msg, time, username) 
 {
-    var message_box = $('<div class="col-6 container not-user-message"></div>');
+    var message_box = $('<div class="other-message"></div>');
 
-    var online_tag = $('<p class="ps-1 pe-0 online" style="display: inline;">• </p>')
+    var text_tag = $('<p class="other-text"></p>')
 
-    var name_tag = $('<p class="pe-2 sender-name"></p>')
+    var online_tag = $('<span>•</span>')
+    online_tag.addClass('online-dot')
 
-    name_tag.append(document.createTextNode(username + ': '))
+    var span_tag = $('<span></span>')
+    span_tag.addClass('other-name')
 
-    var msg_tag = $('<p style="display: inline;"></p>')
-
-    msg_tag.append(document.createTextNode(msg))
-
-    message_box.append(online_tag)
-    message_box.append(name_tag)
-    message_box.append(msg_tag)
+    text_tag.append(online_tag)
+    span_tag.append(document.createTextNode(' ' + username + ': '))
+    text_tag.append(span_tag)
+    text_tag.append(document.createTextNode(msg))
+    message_box.append(text_tag)
     
     $('#chat').append(message_box)
 
-    var time_tag = $('<p class="not-user-msg-time"></p>')
+    var time_tag = $('<p class="other-msg-time"></p>')
     time_tag.append(document.createTextNode(time))
 
     $('#chat').append(time_tag)
@@ -161,7 +160,7 @@ $(document).ready(function ()
 
             buildSenderMessage(msg, getCurrentTime())
 
-            $('html, body').scrollTop( $('#chat').height() );
+            $('html, body').scrollTop( $('#chat').height());
 
             socket.emit('send message', { message: msg })
         }
@@ -181,7 +180,7 @@ $(document).ready(function ()
             
             if ($(unread_number_tag_id).length == 0)
             {
-                $('#chat' + json.chat_id).append('<p class="unread-msg ms-0"> <span id="unread_msg_chat' + json.chat_id +  '" class="unread-msg ms-3 me-0">1</span> unread</p>')
+                $('#chat' + json.chat_id).append('<p class="unread-msg"> <span id="unread_msg_chat' + json.chat_id +  '" class="unread-msg">1</span> unread</p>')
             }
             else
             {
@@ -207,16 +206,16 @@ $(document).ready(function ()
 
         // scroll down to the end
 
-        $('html, body').scrollTop( $('#chat').height() );
+        $('html, body').scrollTop($('#chat').height());
     })
 
     if ($('#unread-msg').offset()) 
     {
-        $('html, body').scrollTop($('#unread-msg').offset().top)
+        $('html, body').scrollTop($('#unread-msg').offset().top - $('#navbar').height())
     }
     else 
     {
-        $('html, body').scrollTop($('#chat').height())
+        $('html, body').scrollTop( $('body').height());
     }
     
     var limit_verdict = document.getElementById("server_verdict")
@@ -231,12 +230,11 @@ $(document).ready(function ()
             text_length >= 0 && text_length <= 1000) 
         {
             event.preventDefault()
-            limit_verdict.innerHTML = "<br>"
             $('#message_form').trigger('submit')
         }
     });
 
-    $('#message_text_area').keyup(function(event)
+    $('#message_text_area').on('propertychange input', function(event)
     {
         var keycode = (event.keyCode ? event.keyCode : event.which);
 
@@ -249,11 +247,77 @@ $(document).ready(function ()
                 event.preventDefault()
             }
 
-            limit_verdict.innerHTML = "Limit 1000 characters"
+            limit_verdict.style.visibility = 'visible';
         }
         else if (text_length >= 0 && text_length < 1000)
         {
-            limit_verdict.innerHTML = "<br>"
+            limit_verdict.style.visibility = 'hidden'
         }
+    });
+
+    var timeout = undefined;
+
+    $('#search_field').on('focus input', function(e) {
+        $('#found-user-list').empty()
+        let name = $('#search_field').val();
+        
+        if (timeout) {
+            clearTimeout(timeout)
+        }
+
+        timeout = setTimeout(function() {
+            socket.emit('get list of users', { name: name })
+        }, 300)
+    });
+
+    var is_mouse_over_hints = false;
+
+    socket.on('update list of users', function(json) {
+        $('#found-user-list').empty()
+
+        let users = json.users;
+
+        if (users.length == 0) {
+            $('#find-verdict').css('display', 'block')
+        }
+        else {
+            $('#find-verdict').css('display', 'none')
+
+            for (let i = 0; i < users.length; i++) {
+                let found_user = $('<p>' + users[i] + '</p>')
+                
+                found_user.on('click', function(event) {
+                    $('#search_field').val(found_user.text())
+                    $('#search_field').focus()
+                })
+    
+                found_user.on('mouseenter', function(e) {
+                    is_mouse_over_hints = true
+                });
+    
+                found_user.on('mouseleave', function(e) {
+                    is_mouse_over_hints = false
+                });
+    
+                $('#found-user-list').append(found_user)
+            }
+        }
+    })
+
+    $('#search_field').on('blur', function(e) {
+        if (!is_mouse_over_hints) {
+            $('#found-user-list').empty();
+        }
+        else {
+            e.preventDefault();
+        }
+    });
+
+    $('#find-button').on('mouseenter', function(e) {
+        is_mouse_over_hints = true
+    });
+
+    $('#find-button').on('mouseleave', function(e) {
+        is_mouse_over_hints = false
     });
 });

@@ -129,14 +129,14 @@ form {
 a.signup {
     text-decoration: none;
     color: #ff0;
-    transition: 500ms;
+    transition: 250ms;
     padding: 0 7px;
+    border-width: 0;
+    border-radius: 24px;
 }
 
 a.signup:hover {
     background-color: #0ff;
-    border-width: 0;
-    border-radius: 24px;
     color: #000;
 }
 

@@ -5,47 +5,43 @@ Messages
 {% endblock %}
 
 {% block body %}
-<h2>Chats</h2>
-<br>
+<div class="chats">
+    <h2>Chats</h2>
 
-<div class="container ms-5">
-{% if chats_with_unread_messages|length > 0 %}
-    {% for item in chats_with_unread_messages %}
-        {% set chat = item[0] %}
-        {% set unread_messages_number = item[1] %}
+    {% if chats_with_unread_messages|length > 0 %}
+        {% for item in chats_with_unread_messages %}
+            {% set chat = item[0] %}
+            {% set unread_messages_number = item[1] %}
 
-        <div id="chat{{ chat.id }}" class="mb-4">
-            {% if chat.users[0].id == current_user.id %}
-                {% if chat.users[1].sid != None %}
-                    <p class="ps-1 pe-0 online-dot">•</p>
+            <div id="chat{{ chat.id }}">
+                {% if chat.users[0].id == current_user.id %}
+                    {% if chat.users[1].sid != None %}
+                        <p class="online-dot">•</p>
+                    {% else %}
+                        <p class="offline-dot">•</p>
+                    {% endif %}
+
+                    <a class="chat-link" href="{{ url_for('social.chat', id=chat.id) }}">{{ chat.users[1].username }}</a>
+                    
                 {% else %}
-                    <p class="ps-1 pe-0 offline-dot">•</p>
+                    {% if chat.users[0].sid != None %}
+                        <p class="online-dot">•</p>
+                    {% else %}
+                        <p class="offline-dot">•</p>
+                    {% endif %}
+                    <a class="chat-link" href="{{ url_for('social.chat', id=chat.id) }}">{{ chat.users[0].username }}</a>
+                    
                 {% endif %}
 
-                <a class="profile-link chat-link" href="{{ url_for('social.chat', id=chat.id) }}">{{ chat.users[1].username }}</a>
-                
-            {% else %}
-                {% if chat.users[0].sid != None %}
-                    <p class="ps-1 pe-0 online-dot">•</p>
-                {% else %}
-                    <p class="ps-1 pe-0 offline-dot">•</p>
+                {% if unread_messages_number > 0 %}
+                    <p class="unread-msg"> <span id="unread_msg_chat{{ chat.id }}" class="unread-msg">{{ unread_messages_number }}</span> unread</p>
                 {% endif %}
-                <a class="profile-link chat-link" href="{{ url_for('social.chat', id=chat.id) }}">{{ chat.users[0].username }}</a>
-                
-            {% endif %}
-
-            {% if unread_messages_number > 0 %}
-                <p class="unread-msg ms-0"> <span id="unread_msg_chat{{ chat.id }}" class="unread-msg ms-3 me-0">{{ unread_messages_number }}</span> unread</p>
-            {% endif %}
-        </div>
-        
-    {% endfor %}
-{% else %}
-<div class="col-11" id="chat">
-    <h3 class="text-center">No chats yet :(</h3>
+            </div>
+            
+        {% endfor %}
+    {% else %}
+        <h2 class="text-center">No chats yet :(</h2>
+    {% endif %}
 </div>
-{% endif %}
-</div>
-
 
 {% endblock %}

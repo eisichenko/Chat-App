@@ -42,11 +42,11 @@ if (__name__ == '__main__' or config.ENV != config.LOCAL_ENV) and not config.REC
             
             db.session.add(admin)
 
-            db.session.commit()
-            
             print('\nCreated default admin user:')
             print(f'USERNAME: {username}')
             print(f'PASSWORD: {password}')
+        
+        db.session.commit()
 
     print('Server started!')
 

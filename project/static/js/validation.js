@@ -58,7 +58,12 @@ function validate() {
             username_verdict.classList.add('valid')
             username_verdict.classList.remove('invalid')
 
-            username_verdict.innerHTML = 'OK'
+            if (username.length == 15) {
+                username_verdict.innerHTML = 'OK (max 15 characters)'
+            }
+            else {
+                username_verdict.innerHTML = 'OK'
+            }
 
             var res_username = true
         }
@@ -97,8 +102,12 @@ function validate() {
             password_verdict.classList.add('valid')
             password_verdict.classList.remove('invalid')
 
-            
-            password_verdict.innerHTML = 'OK'
+            if (password.length == 80) {
+                password_verdict.innerHTML = 'OK (max 80 characters)'
+            }
+            else {
+                password_verdict.innerHTML = 'OK'
+            }
 
             var res_password = true
         }

@@ -60,8 +60,6 @@ def test_add_friends(flask_test_client):
         else:
             friend_number += 1
             assert len(current_user.friends) == friend_number
-            assert response.status_code == 200
-            assert data[0].encode('utf-8') in response.data
             assert len(user.friends) == 1
     
     logout(flask_test_client)
@@ -111,7 +109,6 @@ def test_remove_friends(flask_test_client):
         assert len(user.friends) == 0
         assert len(current_user.friends) == friend_number - 1
         friend_number -= 1
-        assert response.status_code == 200
 
     logout(flask_test_client)
 
