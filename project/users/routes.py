@@ -127,7 +127,9 @@ def my_profile():
 def delete():
     user = User.query.get(current_user.id)
     
-    logout_user()
+    for friend in user.friends:
+        user.friends.remove(friend)
+        friend.friends.remove(user)
     
     db.session.delete(user)
     db.session.commit()

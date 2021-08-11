@@ -60,7 +60,7 @@
                     {% else %}
                         <div class="other-message">
                             <p class="other-text">
-                                {% if message.user.sid != None %}
+                                {% if is_online %}
                                     <span class="online-dot">•</span>
                                 {% else %}
                                     <span class="offline-dot">•</span>
@@ -88,7 +88,7 @@
                 {% for message in unread_messages %}
                     <div class="other-message">
                         <p class="other-text">
-                            {% if message.user.sid != None %}
+                            {% if is_online %}
                                 <span class="online-dot">•</span>
                             {% else %}
                                 <span class="offline-dot">•</span>

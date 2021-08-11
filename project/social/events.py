@@ -40,6 +40,8 @@ def write_message_task(json, chat_id, user_id, sid):
             db.session.add(Timestamp(user_id=user_id, chat_id=chat_id, timestamp=datetime.utcnow()))
         else:
             timestamp.timestamp = datetime.utcnow()
+        
+        user.last_activity = datetime.utcnow()
 
         db.session.commit()
 
@@ -86,6 +88,7 @@ def mark_as_read_task(json, user_id):
 
         db.session.commit()
 
+
 @socketio.on('mark as read')
 def read(json):
     if (json['sender_username'] != current_user.username):
@@ -112,7 +115,6 @@ def get_list_of_users_task(name):
         else:
             socketio.emit('update list of users', { 'users': [user.username for user in users] })
     
-            
 
 @socketio.on('get list of users')
 def get_list_of_users(json):

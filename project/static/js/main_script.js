@@ -288,7 +288,7 @@ $(document).ready(function ()
                 
                 found_user.on('click', function(event) {
                     $('#search_field').val(found_user.text())
-                    $('#search_field').focus()
+                    $('#found-user-list').empty();
                 })
     
                 found_user.on('mouseenter', function(e) {

@@ -22,6 +22,7 @@ def connect():
         join_room(str(chat.id))
         
     current_user.sid = request.sid
+    current_user.last_activity = datetime.utcnow()
     db.session.commit()
     
     socketio.emit('setup connection', { }, room=request.sid)

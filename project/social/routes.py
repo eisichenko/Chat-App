@@ -1,8 +1,9 @@
+from config import MAX_INACTIVE_MINS
 from project.models import *
 from flask import render_template, request, redirect, url_for, session
 from flask_login import login_required, current_user
 from project import db, socketio
-import datetime
+from datetime import datetime, timedelta
 
 from . import social_blueprint
 
@@ -31,7 +32,7 @@ def home():
                             found_username=user.username,
                             found_id=user.id,
                             is_friend=user in current_user.friends,
-                            is_online=user.sid != None)
+                            is_online=((datetime.utcnow() - user.last_activity) < timedelta(minutes=MAX_INACTIVE_MINS)))
 
 
 @social_blueprint.route('/messages/chat/<int:id>')
@@ -44,7 +45,7 @@ def chat(id):
     
     session['current_chat_id'] = id
     
-    hours_delta = datetime.timedelta(hours=int(request.cookies.get('timezoneOffset', 0)))
+    hours_delta = timedelta(hours=int(request.cookies.get('timezoneOffset', 0)))
     
     timestamp = Timestamp.query.filter_by(user_id=current_user.id, chat_id=id).first()
     
@@ -55,18 +56,26 @@ def chat(id):
         seen_messages = Message.query.filter(Message.chat_id == id, Message.date < timestamp.timestamp).order_by(Message.date)
         unread_messages = Message.query.filter(Message.chat_id == id, Message.date >= timestamp.timestamp).order_by(Message.date)
     
+    if chat.users[0].id == current_user.id:
+        other_user = chat.users[1]
+    else:
+        other_user = chat.users[0]
+    
+    is_online = (datetime.utcnow() - other_user.last_activity) < timedelta(minutes=MAX_INACTIVE_MINS)
+    
     page = render_template('chat.html', 
                         seen_messages=list(seen_messages), 
                         unread_messages=list(unread_messages),
                         current_user=current_user,
-                        hours_delta=hours_delta)
+                        hours_delta=hours_delta,
+                        is_online=is_online)
     
     if timestamp == None:
-        db.session.add(Timestamp(user=current_user, 
-                                chat=chat, 
-                                timestamp=datetime.datetime.utcnow()))
+        db.session.add(Timestamp(user_id=current_user.id, 
+                                chat_id=chat.id,
+                                timestamp=datetime.utcnow()))
     else:
-        timestamp.timestamp = datetime.datetime.utcnow()
+        timestamp.timestamp = datetime.utcnow()
 
     db.session.commit()
     
@@ -78,14 +87,22 @@ def chat(id):
 def messages():
     chats_with_unread_messages = []
     for chat in current_user.chats:
+        if chat.users[0].id == current_user.id:
+            other_user = chat.users[1]
+        else:
+            other_user = chat.users[0]
+        
+        is_online = (datetime.utcnow() - other_user.last_activity) < timedelta(minutes=MAX_INACTIVE_MINS)
+        
         timestamp = Timestamp.query.filter_by(user_id=current_user.id, chat_id=chat.id).first()
         if timestamp == None:
-            chats_with_unread_messages.append((chat, len(chat.messages)))
+            chats_with_unread_messages.append((chat, len(chat.messages), is_online))
         else:
             unread_messages_number = Message.query.filter(Message.chat_id == chat.id, Message.date >= timestamp.timestamp).order_by(Message.date).count()
-            chats_with_unread_messages.append((chat, unread_messages_number))
+            chats_with_unread_messages.append((chat, unread_messages_number, is_online))
     
-    return render_template('messages.html', chats_with_unread_messages=chats_with_unread_messages)
+    return render_template('messages.html', 
+                           chats_with_unread_messages=chats_with_unread_messages)
 
 
 @social_blueprint.route('/start-chat/<int:other_id>')
@@ -118,7 +135,13 @@ def start_chat(other_id):
 @social_blueprint.route('/friends')
 @login_required
 def friends():
-    return render_template('friends.html', current_user=current_user)
+    items = []
+    
+    for friend in current_user.friends:
+        is_online = (datetime.utcnow() - friend.last_activity) < timedelta(minutes=MAX_INACTIVE_MINS)
+        items.append((friend, is_online))
+    
+    return render_template('friends.html', items=items)
 
 
 @social_blueprint.route('/add-friend/<int:friend_id>')
@@ -143,12 +166,12 @@ def add_friend(friend_id):
 @social_blueprint.route('/remove-friend/<int:friend_id>')
 @login_required
 def remove_friend(friend_id):
-    if (friend_id == current_user.id):
+    if friend_id == current_user.id:
         return redirect(url_for('social.home'))
     
     friend_user = User.query.get(friend_id)
     
-    if (friend_user == None or not friend_user in current_user.friends):
+    if friend_user == None or not friend_user in current_user.friends:
         return redirect(url_for('social.friends'))
     
     current_user.friends.remove(friend_user)

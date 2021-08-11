@@ -38,6 +38,8 @@ elif ENV == HEROKU_ENV:
 def needs_redis():
     return ENV != LOCAL_ENV and ENV != GITHUB_ENV
 
+MAX_INACTIVE_MINS = 5
+
 class Config(object):
     DEBUG = False
     TESTING = False

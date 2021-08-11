@@ -12,10 +12,11 @@ Messages
         {% for item in chats_with_unread_messages %}
             {% set chat = item[0] %}
             {% set unread_messages_number = item[1] %}
+            {% set is_online = item[2] %}
 
             <div id="chat{{ chat.id }}">
                 {% if chat.users[0].id == current_user.id %}
-                    {% if chat.users[1].sid != None %}
+                    {% if is_online %}
                         <p class="online-dot">•</p>
                     {% else %}
                         <p class="offline-dot">•</p>
@@ -24,7 +25,7 @@ Messages
                     <a class="chat-link" href="{{ url_for('social.chat', id=chat.id) }}">{{ chat.users[1].username }}</a>
                     
                 {% else %}
-                    {% if chat.users[0].sid != None %}
+                    {% if is_online %}
                         <p class="online-dot">•</p>
                     {% else %}
                         <p class="offline-dot">•</p>

@@ -7,16 +7,18 @@ Friends
 {% block body %}
 
 <div class="friends">
-    {% if current_user.friends|length > 0 %}
+    {% if items|length > 0 %}
         <h2>Friends of {{ current_user.username }}</h2>
 
         <hr class="friend-delimiter">
 
-        {% for friend in current_user.friends %}
+        {% for item in items %}
+            {% set friend = item[0] %}
+            {% set is_online = item[1] %}
             <div class="friend">
                 <p class="online-status">
                     Status: 
-                    {% if friend.sid != None %}
+                    {% if is_online %}
                         <span class="online">online</span> 
                     {% else %}
                         <span class="offline">offline</span> 
