@@ -26,26 +26,35 @@
 </head>
 
 <body>
-   <div id="navbar" class="navbar">
-       <ul>
-           <li><a href="{{ url_for('social.home') }}">Home</a></li>
-           <li><a href="{{ url_for('social.messages') }}">Messages</a></li>
-           <li><a href="{{ url_for('social.friends') }}">Friends</a></li>
+    <button id="show-menu" class="mobile-show-menu">≡</button>
+
+    <div id="navbar" class="navbar">
+        <ul>
+            <li><a href="{{ url_for('social.home') }}">Home</a></li>
+            
+            {% if total_unread_messages > 0 %}
+                <li><a id="messages-link" class="messages-link" style="width:auto;" href="{{ url_for('social.messages') }}">Messages <span id="unread-navbar" class="unread-dot">{{ total_unread_messages }}</span></a></li>
+            {% else %}
+                <li><a id="messages-link" class="messages-link" href="{{ url_for('social.messages') }}">Messages</a></li>
+            {% endif %}
+
+            <li><a href="{{ url_for('social.friends') }}">Friends</a></li>
             {% if current_user.is_admin %}
                 <li><a href="/admin">Admin panel</a></li>
             {% endif %}
             <li><a href="{{ url_for('users.my_profile') }}">Profile</a></li>
             <li><a class="logout" href="{{ url_for('users.logout') }}">Log Out</a></li>
-       </ul>
-       <hr>
-   </div>
-   <div class="main-page">
-        {% block body %}{% endblock %}
-   </div>
+        </ul>
+        <hr>
+    </div>
 
-   <div id="footer" class="footer">
-       <p>© Egor Isichenko 2021</p>
-       <a href="https://github.com/eisichenko/ChatApp">Github</a>
-   </div>
+    <div class="main-page">
+        {% block body %}{% endblock %}
+    </div>
+
+    <div id="footer" class="footer">
+        <p>© Egor Isichenko 2021</p>
+        <a href="https://github.com/eisichenko/ChatApp">Github</a>
+    </div>
 </body>
 </html>

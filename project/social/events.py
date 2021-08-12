@@ -106,15 +106,16 @@ def get_list_of_users_task(name):
         
     with app_context:
         if len(name) == 0:
-            users = User.query.limit(10).all()
+            users = User.query.filter(User.username != current_user.username).limit(10)
         else:
-            users = User.query.filter(func.lower(User.username).startswith(func.lower(name)))
+            users = User.query.filter(func.lower(User.username).startswith(func.lower(name)), User.username != current_user.username).limit(10)
+
         if config.needs_redis():
             with app.app.test_request_context():
                 socketio.emit('update list of users', { 'users': [user.username for user in users] })
         else:
             socketio.emit('update list of users', { 'users': [user.username for user in users] })
-    
+
 
 @socketio.on('get list of users')
 def get_list_of_users(json):

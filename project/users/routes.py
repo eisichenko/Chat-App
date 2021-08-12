@@ -1,4 +1,4 @@
-from project.models import User
+from project.models import *
 from flask import render_template, request, redirect, url_for, session, make_response
 from werkzeug.security import check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
@@ -91,10 +91,17 @@ def logout():
 @users_blueprint.route('/my-profile', methods=['GET', 'POST'])
 @login_required
 def my_profile():
+    
+    from project.social.routes import get_unread_messages
+    
+    total_unread_messages = get_unread_messages()
+    
     user = User.query.get(current_user.id)
     
     if request.method == 'GET':
-        return render_template('my_profile.html', user=user)
+        return render_template('my_profile.html', 
+                               user=user,
+                               total_unread_messages=total_unread_messages)
     else:
         username = request.form['username']
         valid_username = not username is None and len(username) > 2 and len(username) < 16
@@ -105,7 +112,8 @@ def my_profile():
             return render_template('my_profile.html', 
                                 span_class='invalid', 
                                 message='Username already exists',
-                                user=user)
+                                user=user,
+                                total_unread_messages=total_unread_messages)
         
         if valid_username:
             user.username = username
@@ -119,7 +127,8 @@ def my_profile():
         return render_template('my_profile.html',
                         span_class='invalid',
                         message='Invalid username',
-                        user=user)
+                        user=user,
+                        total_unread_messages=total_unread_messages)
 
 
 @users_blueprint.route('/delete')

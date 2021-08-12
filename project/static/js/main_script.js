@@ -168,7 +168,7 @@ $(document).ready(function ()
         $('#message_text_area').focus()
     })
 
-    socket.on('update messages', function (json) 
+    socket.on('update messages', function(json) 
     {
         $('#no-msg').remove()
 
@@ -201,7 +201,13 @@ $(document).ready(function ()
         }
         else
         {
-            console.log('another page')
+            if ($('#unread-navbar').length == 0) {
+                $('#messages-link').css('width', 'auto')
+                $('#messages-link').append('<span id="unread-navbar" class="unread-dot">1</span>')
+            }
+            else {
+                $('#unread-navbar').text(Number.parseInt($('#unread-navbar').html()) + 1)
+            }
         }
 
         // scroll down to the end
@@ -320,4 +326,8 @@ $(document).ready(function ()
     $('#find-button').on('mouseleave', function(e) {
         is_mouse_over_hints = false
     });
+
+    $('#show-menu').on('click', function(e) {
+        $('#navbar').animate({ height: 'toggle' }, 100);
+    })
 });

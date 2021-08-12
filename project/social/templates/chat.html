@@ -26,10 +26,18 @@
 </head>
 
 <body>
+    <button id="show-menu" class="mobile-show-menu">≡</button>
+
     <div id="navbar" class="navbar">
         <ul>
             <li><a href="{{ url_for('social.home') }}">Home</a></li>
-            <li><a href="{{ url_for('social.messages') }}">Messages</a></li>
+
+            {% if total_unread_messages > 0 %}
+                <li><a id="messages-link" class="messages-link" style="width:auto;" href="{{ url_for('social.messages') }}">Messages <span id="unread-navbar" class="unread-dot">{{ total_unread_messages }}</span></a></li>
+            {% else %}
+                <li><a id="messages-link" class="messages-link" href="{{ url_for('social.messages') }}">Messages</a></li>
+            {% endif %}
+            
             <li><a href="{{ url_for('social.friends') }}">Friends</a></li>
              {% if current_user.is_admin %}
                  <li><a href="/admin">Admin panel</a></li>

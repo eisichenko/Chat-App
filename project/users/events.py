@@ -5,12 +5,6 @@ from flask_socketio import join_room
 from project.models import *
 
 
-@socketio.on('join')
-def join(json):
-    join_room(str(json['chat_id']), sid=json['user1_sid'])
-    join_room(str(json['chat_id']), sid=json['user2_sid'])
-
-
 @socketio.on('connect')
 def connect():
     if current_user.is_anonymous:
@@ -26,6 +20,7 @@ def connect():
     db.session.commit()
     
     socketio.emit('setup connection', { }, room=request.sid)
+
 
 @socketio.on('disconnect')
 def disconnect():
