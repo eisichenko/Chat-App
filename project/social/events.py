@@ -98,7 +98,7 @@ def read(json):
             mark_as_read_task(json, current_user.id)
             
 
-def get_list_of_users_task(name):
+def get_list_of_users_task(name, current_username):
     if config.needs_redis():
         app_context = app.app.app_context()
     else:
@@ -106,9 +106,9 @@ def get_list_of_users_task(name):
         
     with app_context:
         if len(name) == 0:
-            users = User.query.filter(User.username != current_user.username).limit(10)
+            users = User.query.filter(User.username != current_username).limit(10)
         else:
-            users = User.query.filter(func.lower(User.username).startswith(func.lower(name)), User.username != current_user.username).limit(10)
+            users = User.query.filter(func.lower(User.username).startswith(func.lower(name)), User.username != current_username).limit(10)
 
         if config.needs_redis():
             with app.app.test_request_context():
@@ -121,6 +121,6 @@ def get_list_of_users_task(name):
 def get_list_of_users(json):
     name = json['name']
     if config.needs_redis():
-        high_queue.enqueue(get_list_of_users_task, name)
+        high_queue.enqueue(get_list_of_users_task, name, current_user.username)
     else:
-        get_list_of_users_task(name)
+        get_list_of_users_task(name, current_user.username)
