@@ -30,7 +30,7 @@ if config.needs_redis():
     low_queue = rq.Queue(name='low', connection=redis_connection)
 
 class UserView(ModelView):
-    column_list = ['id', 'username', 'password', 'sid', 'is_admin']
+    column_list = ['id', 'username', 'password', 'sid', 'last_activity', 'is_admin']
 
 
 class ChatView(ModelView):
